@@ -12,3 +12,6 @@ design/logo/README.md
 .externalNativeBuild
 .cxx
 local.properties
+
+# Firebase config berisi API key project - jangan push ke repo publik
+app/google-services.json
