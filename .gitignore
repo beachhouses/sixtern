@@ -1,0 +1,14 @@
+*.iml
+.gradle
+/local.properties
+/.idea/
+# --- SixTern: file internal, JANGAN push ke GitHub ---
+AGENTS.md
+design/README.md
+design/logo/README.md
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
