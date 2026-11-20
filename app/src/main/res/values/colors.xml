@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Template defaults (tetap dipakai theme lama) -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,4 +8,16 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- SixTern brand (dari design/logo/logo.png, Bagian 3 AGENTS) -->
+    <color name="sixtern_purple">#FF6D28D9</color>
+    <color name="sixtern_purple_deep">#FF4C1D95</color>
+    <color name="sixtern_green">#FF10B981</color>
+    <color name="sixtern_green_deep">#FF0B7A55</color>
+
+    <!-- Splash background (dari design/mockups/splashscreen.png) -->
+    <color name="splash_bg_top">#FF1E0A3C</color>
+    <color name="splash_bg_bottom">#FF2A1450</color>
+    <color name="text_on_dark">#FFFFFFFF</color>
+    <color name="text_muted_on_dark">#FFC9C2D9</color>
 </resources>

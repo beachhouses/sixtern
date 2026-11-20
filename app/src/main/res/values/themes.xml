@@ -13,4 +13,10 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Theme.Sixtern.Splash" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:statusBarColor">@color/splash_bg_top</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
 </resources>
