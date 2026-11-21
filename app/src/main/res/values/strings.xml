@@ -34,4 +34,16 @@
     <string name="latitude_hint">Lintang</string>
     <string name="longitude_hint">Bujur</string>
     <string name="radius_hint">Radius absensi (meter)</string>
+    <string name="radius_title">Status Absensi</string>
+    <string name="checking_radius">Memeriksa lokasi...</string>
+    <string name="inside_radius">Di dalam radius perusahaan</string>
+    <string name="outside_radius">Di luar radius perusahaan</string>
+    <string name="no_company">Belum memilih tempat magang</string>
+    <string name="check_in">Absensi Masuk</string>
+    <string name="check_out">Absensi Pulang</string>
+    <string name="stat_logbook">Logbook</string>
+    <string name="stat_mentor">Nilai Mentor</string>
+    <string name="location_denied">Izin lokasi ditolak, absensi butuh lokasi</string>
+    <string name="attendance_valid">Absensi %1$s tercatat valid</string>
+    <string name="attendance_outside">Di luar radius, absensi tercatat tidak valid</string>
 </resources>
