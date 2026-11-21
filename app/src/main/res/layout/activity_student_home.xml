@@ -164,6 +164,13 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/homeMenuBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:menu="@menu/bottom_nav"
+            xmlns:app="http://schemas.android.com/apk/res-auto" />
         <ProgressBar
             android:id="@+id/loadingBar"
             android:layout_width="wrap_content"

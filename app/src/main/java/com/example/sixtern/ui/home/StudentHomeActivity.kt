@@ -1,6 +1,7 @@
 package com.example.sixtern.ui.home
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
@@ -13,6 +14,9 @@ import com.example.sixtern.R
 import com.example.sixtern.data.model.Attendance
 import com.example.sixtern.databinding.ActivityStudentHomeBinding
 import com.example.sixtern.ui.auth.LoginActivity
+import com.example.sixtern.ui.evaluation.EvaluationActivity
+import com.example.sixtern.ui.logbook.LogbookActivity
+import com.example.sixtern.ui.profile.ProfileActivity
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
@@ -40,6 +44,30 @@ class StudentHomeActivity : AppCompatActivity() {
         binding.greetingText.text = if (name.isBlank()) "Halo!" else "Halo, $name!"
         viewModel.load(uid)
         requestLocation()
+        binding.homeMenuBar.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_logbook -> {
+                    val intent = Intent(this, LogbookActivity::class.java)
+                    intent.putExtra(LoginActivity.EXTRA_USER_ID, currentUid())
+                    intent.putExtra(LogbookActivity.EXTRA_COMPANY_ID, currentCompanyId())
+                    startActivity(intent)
+                    true
+                }
+                R.id.nav_evaluation -> {
+                    val intent = Intent(this, EvaluationActivity::class.java)
+                    intent.putExtra(LoginActivity.EXTRA_USER_ID, currentUid())
+                    startActivity(intent)
+                    true
+                }
+                R.id.nav_profile -> {
+                    val intent = Intent(this, ProfileActivity::class.java)
+                    intent.putExtra(LoginActivity.EXTRA_USER_ID, currentUid())
+                    startActivity(intent)
+                    true
+                }
+                else -> true
+            }
+        }
         binding.checkInButton.setOnClickListener {
             viewModel.recordAttendance(Attendance.TYPE_IN)
         }
@@ -71,6 +99,14 @@ class StudentHomeActivity : AppCompatActivity() {
                 viewModel.clearAttendanceResult()
             }
         }
+    }
+
+    private fun currentUid(): String =
+        intent.getStringExtra(LoginActivity.EXTRA_USER_ID).orEmpty()
+
+    private fun currentCompanyId(): String {
+        val state = viewModel.state.value
+        return if (state is HomeUiState.Loaded) state.user.companyId.orEmpty() else ""
     }
 
     private fun renderLoaded(state: HomeUiState.Loaded) {

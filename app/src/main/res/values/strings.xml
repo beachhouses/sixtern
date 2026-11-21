@@ -46,4 +46,24 @@
     <string name="location_denied">Izin lokasi ditolak, absensi butuh lokasi</string>
     <string name="attendance_valid">Absensi %1$s tercatat valid</string>
     <string name="attendance_outside">Di luar radius, absensi tercatat tidak valid</string>
+    <string name="logbook_empty">Belum ada logbook, tambah lewat tombol +</string>
+    <string name="logbook_add">Tambah logbook</string>
+    <string name="status_pending">Menunggu</string>
+    <string name="status_approved">Disetujui</string>
+    <string name="status_revision">Perlu revisi</string>
+    <string name="fix_revision">Perbaiki Revisi</string>
+    <string name="logbook_form_title">Catatan Logbook</string>
+    <string name="logbook_title_hint">Judul kegiatan</string>
+    <string name="logbook_desc_hint">Ceritakan kegiatan magangmu</string>
+    <string name="save">Simpan</string>
+    <string name="evaluation_title">Evaluasi Magang</string>
+    <string name="total_score">Nilai Akhir</string>
+    <string name="download_pdf">Unduh PDF</string>
+    <string name="submit_docs">Kirim Dokumen</string>
+    <string name="profile_title">Profil</string>
+    <string name="logout">Keluar</string>
+    <string name="menu_home">Beranda</string>
+    <string name="menu_logbook">Logbook</string>
+    <string name="menu_evaluation">Nilai</string>
+    <string name="menu_profile">Profil</string>
 </resources>
