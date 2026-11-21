@@ -47,6 +47,10 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, StudentRegisterActivity::class.java))
         }
 
+        binding.mentorRegisterLink.setOnClickListener {
+            startActivity(Intent(this, MentorRegisterActivity::class.java))
+        }
+
         viewModel.state.observe(this) { state ->
             when (state) {
                 is AuthUiState.Idle -> showLoading(false)

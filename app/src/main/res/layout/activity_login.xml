@@ -85,6 +85,15 @@
             android:text="@string/login_button" />
 
         <TextView
+            android:id="@+id/mentorRegisterLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="@string/register_mentor_link"
+            android:textColor="@color/sixtern_green" />
+
+        <TextView
             android:id="@+id/registerLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

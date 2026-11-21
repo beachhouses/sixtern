@@ -18,4 +18,20 @@
     <string name="nim_hint">NIM</string>
     <string name="company_hint">Tempat magang</string>
     <string name="register_button">Daftar</string>
+    <string name="register_mentor_link">Daftar sebagai mentor perusahaan</string>
+    <string name="mentor_register_title">Daftar Mentor</string>
+    <string name="mentor_register_subtitle">Buat akun dan daftarkan perusahaanmu</string>
+    <string name="section_account">Akun</string>
+    <string name="section_company">Perusahaan</string>
+    <string name="section_schedule">Jadwal Kerja</string>
+    <string name="section_location">Lokasi Absensi</string>
+    <string name="company_name_hint">Nama perusahaan</string>
+    <string name="slots_hint">Slot magang</string>
+    <string name="benefits_hint">Benefit (uang saku, makan, dsb.)</string>
+    <string name="days_hint">Hari kerja (pisahkan koma)</string>
+    <string name="start_time_hint">Jam masuk</string>
+    <string name="end_time_hint">Jam pulang</string>
+    <string name="latitude_hint">Lintang</string>
+    <string name="longitude_hint">Bujur</string>
+    <string name="radius_hint">Radius absensi (meter)</string>
 </resources>

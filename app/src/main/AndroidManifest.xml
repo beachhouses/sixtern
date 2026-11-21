@@ -38,6 +38,10 @@
             android:name=".ui.auth.MentorHomeActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.auth.MentorRegisterActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
