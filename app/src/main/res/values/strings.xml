@@ -3,4 +3,19 @@
     <string name="tagline">Penilaian Magang, Lebih Mudah</string>
     <string name="batch_label">Batch Gen-6</string>
     <string name="splash_footer">Sistem Terenkripsi &amp; Terintegrasi HR</string>
+    <string name="login_subtitle">Masuk untuk mengelola magangmu</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Kata sandi</string>
+    <string name="role_hint">Masuk sebagai</string>
+    <string name="role_mahasiswa">Mahasiswa</string>
+    <string name="role_mentor">Mentor</string>
+    <string name="login_button">Masuk</string>
+    <string name="login_welcome">Selamat datang, %1$s!</string>
+    <string name="register_student_link">Belum punya akun? Daftar sebagai mahasiswa</string>
+    <string name="register_title">Daftar Mahasiswa</string>
+    <string name="register_subtitle">Isi data dan pilih tempat magang</string>
+    <string name="name_hint">Nama lengkap</string>
+    <string name="nim_hint">NIM</string>
+    <string name="company_hint">Tempat magang</string>
+    <string name="register_button">Daftar</string>
 </resources>

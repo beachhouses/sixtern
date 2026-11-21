@@ -22,6 +22,22 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.StudentRegisterActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.home.StudentHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.MentorHomeActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
