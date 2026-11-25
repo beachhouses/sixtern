@@ -37,7 +37,7 @@ class LogbookActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
         binding.logbookNav.itemIconTintList = null
-        StudentNav.setup(binding.logbookNav, this, R.id.nav_logbook, studentId)
+        StudentNav.setup(binding.logbookNav, this, R.id.nav_logbook, studentId, companyId)
         viewModel.init(studentId, companyId)
         setupTabs()
         binding.addButton.setOnClickListener {

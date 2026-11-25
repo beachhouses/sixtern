@@ -29,6 +29,9 @@ class EvaluationViewModel(
     private val _userName = MutableLiveData("")
     val userName: LiveData<String> = _userName
 
+    private val _companyId = MutableLiveData("")
+    val companyId: LiveData<String> = _companyId
+
     private val _message = MutableLiveData<String?>(null)
     val message: LiveData<String?> = _message
 
@@ -37,6 +40,7 @@ class EvaluationViewModel(
             try {
                 val user = authRepository.getUser(uid)
                 _userName.value = user?.name.orEmpty()
+                _companyId.value = user?.companyId.orEmpty()
                 _evaluation.value = internshipRepository.getEvaluation(uid)
             } catch (e: Exception) {
                 _message.value = e.message ?: "Gagal memuat evaluasi"

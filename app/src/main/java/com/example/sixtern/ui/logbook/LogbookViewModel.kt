@@ -72,6 +72,10 @@ class LogbookViewModel(
             _message.value = "Keterangan wajib diisi"
             return
         }
+        if (editingId.isNullOrBlank() && companyId.isBlank()) {
+            _message.value = "Pilih tempat magang dulu di beranda"
+            return
+        }
         _saving.value = true
         viewModelScope.launch {
             try {

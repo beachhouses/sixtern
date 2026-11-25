@@ -15,10 +15,35 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
  */
 object StudentNav {
 
-    fun setup(bar: BottomNavigationView, activity: Activity, selectedItemId: Int, uid: String) {
+    /** companyId kosong -> hanya Beranda & Profil yang terbuka, sisanya kembali ke beranda. */
+    fun setup(
+        bar: BottomNavigationView,
+        activity: Activity,
+        selectedItemId: Int,
+        uid: String,
+        companyId: String = ""
+    ) {
         bar.selectedItemId = selectedItemId
         bar.setOnItemSelectedListener { item ->
             if (item.itemId == selectedItemId) return@setOnItemSelectedListener true
+            val needsCompany = item.itemId == R.id.nav_logbook ||
+                item.itemId == R.id.nav_evaluation
+            if (needsCompany && companyId.isBlank()) {
+                android.widget.Toast.makeText(
+                    activity,
+                    activity.getString(R.string.need_company_first),
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+                if (activity !is StudentHomeActivity) {
+                    val home = Intent(activity, StudentHomeActivity::class.java)
+                    home.putExtra(LoginActivity.EXTRA_USER_ID, uid)
+                    activity.startActivity(home)
+                    @Suppress("DEPRECATION")
+                    activity.overridePendingTransition(0, 0)
+                    activity.finish()
+                }
+                return@setOnItemSelectedListener false
+            }
             val intent = when (item.itemId) {
                 R.id.nav_home -> Intent(activity, StudentHomeActivity::class.java)
                 R.id.nav_logbook -> Intent(activity, LogbookActivity::class.java)

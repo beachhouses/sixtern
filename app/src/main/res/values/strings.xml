@@ -78,6 +78,14 @@
     <string name="menu_profile">Profil</string>
     <string name="home_subtitle">Pantau absensi, logbook, dan nilaimu hari ini.</string>
     <string name="quick_menu">Menu cepat</string>
+    <string name="choose_company_title">Pilih Tempat Magang</string>
+    <string name="choose_company_subtitle">Kamu belum terdaftar di tempat magang mana pun. Pilih salah satu perusahaan berikut untuk mulai magang.</string>
+    <string name="choose_company_empty">Belum ada perusahaan yang membuka slot magang. Coba lagi nanti.</string>
+    <string name="choose_company_slots">%1$d slot</string>
+    <string name="choose_company_schedule">%1$s • %2$s–%3$s</string>
+    <string name="choose_company_join">Pilih</string>
+    <string name="choose_company_joined">Berhasil bergabung dengan %1$s! Memuat berandamu…</string>
+    <string name="need_company_first">Pilih tempat magang dulu di beranda untuk membuka fitur ini</string>
     <string name="logbook_subtitle">Catat dan pantau progres magangmu.</string>
     <string name="eval_mentor_label">Pembimbing Lapangan</string>
     <string name="eval_supervisor_label">Dosen Pembimbing</string>

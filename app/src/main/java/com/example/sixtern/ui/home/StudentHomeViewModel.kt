@@ -23,8 +23,11 @@ sealed class HomeUiState {
         val attendanceCount: Int,
         val insideRadius: Boolean?,
         val currentLat: Double?,
-        val currentLng: Double?
-    ) : HomeUiState()
+        val currentLng: Double?,
+        val availableCompanies: List<Company> = emptyList()
+    ) : HomeUiState() {
+        val hasCompany: Boolean get() = !user.companyId.isNullOrBlank() && company != null
+    }
     data class Error(val message: String) : HomeUiState()
 }
 
@@ -45,11 +48,16 @@ class StudentHomeViewModel(
             try {
                 val user = authRepository.getUser(uid)
                     ?: throw IllegalStateException("Profil tidak ditemukan")
-                val company = user.companyId
-                    ?.takeIf { it.isNotBlank() }
-                    ?.let { loadCompany(it) }
+                val companyId = user.companyId?.takeIf { it.isNotBlank() }
+                val company = companyId?.let { loadCompany(it) }
                 val evaluation = internshipRepository.getEvaluation(uid)
                 val logbooks = internshipRepository.getLogbooks(uid)
+                // Mahasiswa tanpa tempat magang: tampilkan daftar perusahaan yang bisa dipilih.
+                val available = if (companyId == null) {
+                    loadCompanies()
+                } else {
+                    emptyList()
+                }
                 _state.value = HomeUiState.Loaded(
                     user = user,
                     company = company,
@@ -57,11 +65,21 @@ class StudentHomeViewModel(
                     attendanceCount = logbooks.size,
                     insideRadius = null,
                     currentLat = null,
-                    currentLng = null
+                    currentLng = null,
+                    availableCompanies = available
                 )
+                _joining.value = false
             } catch (e: Exception) {
                 _state.value = HomeUiState.Error(e.message ?: "Gagal memuat beranda")
             }
+        }
+    }
+
+    private suspend fun loadCompanies(): List<Company> {
+        return try {
+            authRepository.getCompanies()
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 
@@ -119,4 +137,35 @@ class StudentHomeViewModel(
     fun clearAttendanceResult() {
         _attendanceResult.value = null
     }
+
+    private val _joining = MutableLiveData<Boolean>(false)
+    val joining: LiveData<Boolean> = _joining
+
+    private val _joinResult = MutableLiveData<String?>(null)
+    val joinResult: LiveData<String?> = _joinResult
+
+    /** Mahasiswa memilih tempat magang: simpan companyId lalu muat ulang beranda. */
+    fun joinCompany(companyId: String) {
+        val current = _state.value
+        if (current !is HomeUiState.Loaded || _joining.value == true) return
+        if (companyId.isBlank()) return
+        _joining.value = true
+        viewModelScope.launch {
+            try {
+                val updated = current.user.copy(companyId = companyId)
+                authRepository.saveUser(updated)
+                _joinResult.value = current.availableCompanies
+                    .firstOrNull { it.id == companyId }?.name.orEmpty()
+                load(current.user.uid)
+            } catch (e: Exception) {
+                _joining.value = false
+                _state.value = HomeUiState.Error(e.message ?: "Gagal memilih tempat magang")
+            }
+        }
+    }
+
+    fun clearJoinResult() {
+        _joinResult.value = null
+    }
+
 }

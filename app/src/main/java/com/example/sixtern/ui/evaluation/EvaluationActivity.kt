@@ -20,6 +20,9 @@ class EvaluationActivity : AppCompatActivity() {
         viewModel.load(uid)
         binding.evalNav.itemIconTintList = null
         StudentNav.setup(binding.evalNav, this, R.id.nav_evaluation, uid)
+        viewModel.companyId.observe(this) { companyId ->
+            StudentNav.setup(binding.evalNav, this, R.id.nav_evaluation, uid, companyId)
+        }
         viewModel.evaluation.observe(this) { evaluation ->
             if (evaluation != null) {
                 binding.totalText.text = evaluation.totalScore.toString()
