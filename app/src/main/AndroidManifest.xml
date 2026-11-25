@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.location" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -41,8 +43,24 @@
             android:theme="@style/Theme.Sixtern.Login" />
 
         <activity
+            android:name=".ui.home.CompanyDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+        <activity
+            android:name=".ui.profile.MapPickerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+        <activity
             android:name=".ui.auth.MentorHomeActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+        <activity
+            android:name=".ui.profile.MentorProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
 
         <activity
             android:name=".ui.auth.MentorRegisterActivity"

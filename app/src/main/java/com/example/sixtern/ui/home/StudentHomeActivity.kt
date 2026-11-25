@@ -42,7 +42,7 @@ class StudentHomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityStudentHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        companyAdapter = CompanyPickAdapter { company -> confirmAndJoin(company) }
+        companyAdapter = CompanyPickAdapter { company -> openCompanyDetail(company) }
         binding.companyRecycler.layoutManager = LinearLayoutManager(this)
         binding.companyRecycler.adapter = companyAdapter
         val uid = intent.getStringExtra(LoginActivity.EXTRA_USER_ID).orEmpty()
@@ -80,6 +80,10 @@ class StudentHomeActivity : AppCompatActivity() {
         }
         binding.checkOutButton.setOnClickListener {
             viewModel.recordAttendance(Attendance.TYPE_OUT)
+        }
+        binding.retryCompaniesButton.setOnClickListener {
+            val uid = currentUid()
+            if (uid.isNotBlank()) viewModel.load(uid, forceServer = true)
         }
         viewModel.state.observe(this) { state ->
             when (state) {
@@ -149,9 +153,17 @@ class StudentHomeActivity : AppCompatActivity() {
             // MODE 2: belum memilih -> daftar perusahaan yang bisa dipilih.
             binding.dashboardGroup.visibility = View.GONE
             binding.companyPickerGroup.visibility = View.VISIBLE
+            companyAdapter.updateTakenSlots(state.takenSlots)
             companyAdapter.submitList(state.availableCompanies)
-            binding.companyEmptyText.visibility =
-                if (state.availableCompanies.isEmpty()) View.VISIBLE else View.GONE
+            val isEmpty = state.availableCompanies.isEmpty()
+            binding.companyEmptyCard.visibility = if (isEmpty) View.VISIBLE else View.GONE
+            binding.companyRecycler.visibility = if (isEmpty) View.GONE else View.VISIBLE
+            // Pesan error load daftar ikut tampil di kartu kosong bila ada.
+            if (isEmpty && !state.companiesError.isNullOrBlank()) {
+                binding.companyEmptyText.text = state.companiesError
+            } else {
+                binding.companyEmptyText.text = getString(R.string.choose_company_empty)
+            }
         }
     }
 
@@ -189,22 +201,22 @@ class StudentHomeActivity : AppCompatActivity() {
         binding.checkOutButton.isEnabled = hasLocation
     }
 
-    private fun confirmAndJoin(company: Company) {
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle(company.name.ifBlank { getString(R.string.choose_company_title) })
-            .setMessage(
-                getString(
-                    R.string.choose_company_schedule,
-                    company.workDays.filter { it.isNotBlank() }.joinToString(", ").ifBlank { "-" },
-                    company.startTime.ifBlank { "-" },
-                    company.endTime.ifBlank { "-" }
-                )
-            )
-            .setPositiveButton(R.string.choose_company_join) { _, _ ->
-                viewModel.joinCompany(company.id)
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+    private val companyDetailLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        // Kembali dari detail setelah mengajukan -> muat ulang beranda (Mode 1).
+        if (result.resultCode == RESULT_OK) {
+            val uid = currentUid()
+            if (uid.isNotBlank()) viewModel.load(uid)
+        }
+    }
+
+    /** Klik kartu perusahaan -> buka halaman detail + ajukan dari sana. */
+    private fun openCompanyDetail(company: Company) {
+        val intent = Intent(this, CompanyDetailActivity::class.java)
+        intent.putExtra(LoginActivity.EXTRA_USER_ID, currentUid())
+        intent.putExtra(CompanyDetailActivity.EXTRA_COMPANY_ID, company.id)
+        companyDetailLauncher.launch(intent)
     }
 
     private fun requestLocation() {

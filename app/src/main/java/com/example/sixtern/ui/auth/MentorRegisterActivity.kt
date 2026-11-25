@@ -22,16 +22,7 @@ class MentorRegisterActivity : AppCompatActivity() {
             viewModel.signUpMentor(
                 email = binding.emailInput.text.toString(),
                 password = binding.passwordInput.text.toString(),
-                name = binding.nameInput.text.toString(),
-                companyName = binding.companyInput.text.toString(),
-                slotsText = binding.slotsInput.text.toString(),
-                benefits = binding.benefitsInput.text.toString(),
-                workDays = binding.daysInput.text.toString(),
-                startTime = binding.startTimeInput.text.toString(),
-                endTime = binding.endTimeInput.text.toString(),
-                latitudeText = binding.latitudeInput.text.toString(),
-                longitudeText = binding.longitudeInput.text.toString(),
-                radiusText = binding.radiusInput.text.toString()
+                name = binding.nameInput.text.toString()
             )
         }
 

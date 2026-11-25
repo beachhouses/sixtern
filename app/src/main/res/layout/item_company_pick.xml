@@ -3,7 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_home_card"
+    android:clickable="true"
     android:elevation="2dp"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -14,11 +17,13 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:id="@+id/companyLogo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="@drawable/bg_icon_circle"
             android:contentDescription="@string/company_hint"
-            android:padding="8dp"
+            android:padding="6dp"
+            android:scaleType="centerCrop"
             android:src="@drawable/ic_nav_company" />
 
         <LinearLayout
@@ -47,19 +52,6 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/pickButton"
-            android:layout_width="wrap_content"
-            android:layout_height="42dp"
-            android:background="@drawable/bg_login_button"
-            android:backgroundTint="@null"
-            android:minWidth="88dp"
-            android:text="@string/choose_company_join"
-            android:textAllCaps="false"
-            android:textColor="@color/login_button_text"
-            android:textSize="13sp"
-            android:textStyle="bold" />
     </LinearLayout>
 
     <TextView

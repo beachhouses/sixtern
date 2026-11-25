@@ -6,7 +6,6 @@ import com.example.sixtern.data.model.Evaluation
 import com.example.sixtern.data.model.Logbook
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 
 class InternshipRepository(
@@ -33,12 +32,14 @@ class InternshipRepository(
     }
 
     suspend fun getLogbooks(studentId: String): List<Logbook> {
+        // Tanpa orderBy server agar tidak butuh composite index Firestore
+        // (penyebab error FAILED_PRECONDITION di beranda); urutkan di memori.
         val snapshot = firestore.collection(Logbook.COLLECTION)
             .whereEqualTo("studentId", studentId)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
             .get()
             .await()
         return snapshot.toObjects(Logbook::class.java)
+            .sortedByDescending { it.createdAt?.seconds ?: Long.MIN_VALUE }
     }
 
     suspend fun updateLogbookRevision(logbookId: String, title: String, description: String) {

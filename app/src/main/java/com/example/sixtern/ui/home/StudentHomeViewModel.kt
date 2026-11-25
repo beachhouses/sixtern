@@ -24,7 +24,10 @@ sealed class HomeUiState {
         val insideRadius: Boolean?,
         val currentLat: Double?,
         val currentLng: Double?,
-        val availableCompanies: List<Company> = emptyList()
+        val availableCompanies: List<Company> = emptyList(),
+        val companiesError: String? = null,
+        /** companyId -> jumlah mahasiswa terdaftar (untuk hitung sisa slot). */
+        val takenSlots: Map<String, Int> = emptyMap()
     ) : HomeUiState() {
         val hasCompany: Boolean get() = !user.companyId.isNullOrBlank() && company != null
     }
@@ -42,21 +45,57 @@ class StudentHomeViewModel(
     private val _attendanceResult = MutableLiveData<Attendance?>()
     val attendanceResult: LiveData<Attendance?> = _attendanceResult
 
-    fun load(uid: String) {
+    fun load(uid: String, forceServer: Boolean = false) {
         _state.value = HomeUiState.Loading
         viewModelScope.launch {
+            val user: SixternUser
             try {
-                val user = authRepository.getUser(uid)
+                user = authRepository.getUser(uid)
                     ?: throw IllegalStateException("Profil tidak ditemukan")
-                val companyId = user.companyId?.takeIf { it.isNotBlank() }
-                val company = companyId?.let { loadCompany(it) }
-                val evaluation = internshipRepository.getEvaluation(uid)
-                val logbooks = internshipRepository.getLogbooks(uid)
+            } catch (e: Exception) {
+                _state.value = HomeUiState.Error(friendlyHomeMessage(e))
+                return@launch
+            }
+            val companyId = user.companyId?.takeIf { it.isNotBlank() }
+            var company: Company? = null
+            if (companyId != null) {
+                company = try {
+                    authRepository.getCompanies(forceServer).firstOrNull { it.id == companyId }
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            // Evaluasi & logbook boleh gagal sebagian (aturan/indeks):
+            // daftar perusahaan tetap harus tampil, bukan seluruh layar error.
+            val evaluation = try {
+                internshipRepository.getEvaluation(uid)
+            } catch (e: Exception) {
+                null
+            }
+            var loadNotice: String? = null
+            val logbooks = try {
+                internshipRepository.getLogbooks(uid)
+            } catch (e: Exception) {
+                loadNotice = friendlyHomeMessage(e)
+                emptyList()
+            }
                 // Mahasiswa tanpa tempat magang: tampilkan daftar perusahaan yang bisa dipilih.
-                val available = if (companyId == null) {
-                    loadCompanies()
-                } else {
-                    emptyList()
+                var companiesError: String? = loadNotice
+                var available: List<Company> = emptyList()
+                var taken: Map<String, Int> = emptyMap()
+                if (companyId == null) {
+                    try {
+                        available = authRepository.getCompanies(forceServer)
+                        // Sisa slot: hitung pendaftar per perusahaan.
+                        taken = try {
+                            authRepository.countStudentsByCompany(available.map { it.id })
+                        } catch (e: Exception) {
+                            emptyMap()
+                        }
+                    } catch (e: Exception) {
+                        companiesError = listOfNotNull(loadNotice, friendlyHomeMessage(e))
+                            .distinct().joinToString("\n")
+                    }
                 }
                 _state.value = HomeUiState.Loaded(
                     user = user,
@@ -66,28 +105,33 @@ class StudentHomeViewModel(
                     insideRadius = null,
                     currentLat = null,
                     currentLng = null,
-                    availableCompanies = available
+                    availableCompanies = available,
+                    companiesError = companiesError,
+                    takenSlots = taken
                 )
                 _joining.value = false
-            } catch (e: Exception) {
-                _state.value = HomeUiState.Error(e.message ?: "Gagal memuat beranda")
-            }
         }
     }
 
-    private suspend fun loadCompanies(): List<Company> {
-        return try {
-            authRepository.getCompanies()
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
-
-    private suspend fun loadCompany(companyId: String): Company? {
-        return try {
-            authRepository.getCompanies().firstOrNull { it.id == companyId }
-        } catch (e: Exception) {
-            null
+    /**
+     * Ubah pesan teknis Firebase menjadi bahasa yang dimengerti mahasiswa.
+     * Kasus umum di beranda: query logbook butuh composite index Firestore
+     * (FAILED_PRECONDITION / "precondition") sehingga load beranda gagal.
+     */
+    private fun friendlyHomeMessage(e: Exception): String {
+        val raw = e.message.orEmpty()
+        return when {
+            "FAILED_PRECONDITION" in raw || "precondition" in raw.lowercase() ->
+                "Gagal memuat beranda karena database butuh penyesuaian. " +
+                    "Hubungi mentor/prodi agar index Firestore dibuatkan, lalu coba lagi."
+            "PERMISSION_DENIED" in raw || "permission" in raw.lowercase() ->
+                "Akses database ditolak. Pastikan akun ini sudah terdaftar " +
+                    "dan aturan Firestore mengizinkan membaca datanya."
+            "network" in raw.lowercase() || "TIMEOUT" in raw ||
+                "UNAVAILABLE" in raw ->
+                "Jaringan bermasalah. Periksa koneksi internet lalu coba lagi."
+            raw.isNotBlank() -> "Gagal memuat beranda: $raw"
+            else -> "Gagal memuat beranda"
         }
     }
 
