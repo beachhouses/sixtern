@@ -7,8 +7,10 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.sixtern.R
 import com.example.sixtern.databinding.ActivityLogbookBinding
 import com.example.sixtern.ui.auth.LoginActivity
+import com.example.sixtern.ui.home.StudentNav
 import com.google.android.material.tabs.TabLayout
 
 class LogbookActivity : AppCompatActivity() {
@@ -34,6 +36,8 @@ class LogbookActivity : AppCompatActivity() {
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
+        binding.logbookNav.itemIconTintList = null
+        StudentNav.setup(binding.logbookNav, this, R.id.nav_logbook, studentId)
         viewModel.init(studentId, companyId)
         setupTabs()
         binding.addButton.setOnClickListener {

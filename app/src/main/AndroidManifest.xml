@@ -27,15 +27,18 @@
 
         <activity
             android:name=".ui.auth.LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
 
         <activity
             android:name=".ui.auth.StudentRegisterActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
 
         <activity
             android:name=".ui.home.StudentHomeActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
 
         <activity
             android:name=".ui.auth.MentorHomeActivity"
@@ -43,23 +46,28 @@
 
         <activity
             android:name=".ui.auth.MentorRegisterActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
 
         <activity
             android:name=".ui.logbook.LogbookActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
 
         <activity
             android:name=".ui.logbook.LogbookFormActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
 
         <activity
             android:name=".ui.evaluation.EvaluationActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
 
         <activity
             android:name=".ui.profile.ProfileActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
 
     </application>
 

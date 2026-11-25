@@ -44,29 +44,23 @@ class StudentHomeActivity : AppCompatActivity() {
         binding.greetingText.text = if (name.isBlank()) "Halo!" else "Halo, $name!"
         viewModel.load(uid)
         requestLocation()
-        binding.homeMenuBar.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_logbook -> {
-                    val intent = Intent(this, LogbookActivity::class.java)
-                    intent.putExtra(LoginActivity.EXTRA_USER_ID, currentUid())
-                    intent.putExtra(LogbookActivity.EXTRA_COMPANY_ID, currentCompanyId())
-                    startActivity(intent)
-                    true
-                }
-                R.id.nav_evaluation -> {
-                    val intent = Intent(this, EvaluationActivity::class.java)
-                    intent.putExtra(LoginActivity.EXTRA_USER_ID, currentUid())
-                    startActivity(intent)
-                    true
-                }
-                R.id.nav_profile -> {
-                    val intent = Intent(this, ProfileActivity::class.java)
-                    intent.putExtra(LoginActivity.EXTRA_USER_ID, currentUid())
-                    startActivity(intent)
-                    true
-                }
-                else -> true
-            }
+        binding.homeMenuBar.itemIconTintList = null
+        StudentNav.setup(binding.homeMenuBar, this, R.id.nav_home, uid)
+        binding.quickLogbook.setOnClickListener {
+            val intent = Intent(this, LogbookActivity::class.java)
+            intent.putExtra(LoginActivity.EXTRA_USER_ID, currentUid())
+            intent.putExtra(LogbookActivity.EXTRA_COMPANY_ID, currentCompanyId())
+            startActivity(intent)
+        }
+        binding.quickEval.setOnClickListener {
+            val intent = Intent(this, EvaluationActivity::class.java)
+            intent.putExtra(LoginActivity.EXTRA_USER_ID, currentUid())
+            startActivity(intent)
+        }
+        binding.quickProfile.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            intent.putExtra(LoginActivity.EXTRA_USER_ID, currentUid())
+            startActivity(intent)
         }
         binding.checkInButton.setOnClickListener {
             viewModel.recordAttendance(Attendance.TYPE_IN)
@@ -111,6 +105,7 @@ class StudentHomeActivity : AppCompatActivity() {
 
     private fun renderLoaded(state: HomeUiState.Loaded) {
         val user = state.user
+        binding.avatarText.text = user.name.firstOrNull()?.uppercase() ?: "S"
         binding.nimText.text = user.nim ?: "-"
         binding.universityText.text = user.university + " - " + user.major
         val company = state.company
@@ -126,16 +121,19 @@ class StudentHomeActivity : AppCompatActivity() {
         binding.mentorScoreText.text = if (score != null) score.toString() else "-"
         when (state.insideRadius) {
             true -> {
+                binding.radiusDot.setBackgroundResource(R.drawable.bg_dot_green)
                 binding.radiusStatus.text = getString(R.string.inside_radius)
                 binding.radiusStatus.setTextColor(ContextCompat.getColor(this, R.color.sixtern_green))
             }
             false -> {
+                binding.radiusDot.setBackgroundResource(R.drawable.bg_dot_plum)
                 binding.radiusStatus.text = getString(R.string.outside_radius)
-                binding.radiusStatus.setTextColor(ContextCompat.getColor(this, R.color.sixtern_purple))
+                binding.radiusStatus.setTextColor(ContextCompat.getColor(this, R.color.login_button))
             }
             null -> {
+                binding.radiusDot.setBackgroundResource(R.drawable.bg_dot_grey)
                 binding.radiusStatus.text = getString(R.string.checking_radius)
-                binding.radiusStatus.setTextColor(ContextCompat.getColor(this, R.color.text_muted_on_dark))
+                binding.radiusStatus.setTextColor(ContextCompat.getColor(this, R.color.login_text_secondary))
             }
         }
         val hasLocation = state.currentLat != null && state.currentLng != null

@@ -44,7 +44,7 @@ class AuthViewModel(
                 val user = repository.signIn(email.trim(), password)
                 _state.value = AuthUiState.Success(user)
             } catch (e: Exception) {
-                _state.value = AuthUiState.Error(e.message ?: "Login gagal, coba lagi")
+                _state.value = AuthUiState.Error(friendlyAuthMessage(e))
             }
         }
     }
@@ -74,10 +74,7 @@ class AuthViewModel(
             _state.value = AuthUiState.Error("Email wajib diisi dan kata sandi minimal 6 karakter")
             return
         }
-        if (companyId.isBlank()) {
-            _state.value = AuthUiState.Error("Pilih tempat magang terlebih dahulu")
-            return
-        }
+        // companyId boleh kosong: tempat magang dipilih nanti di dashboard.
         _state.value = AuthUiState.Loading
         viewModelScope.launch {
             try {
@@ -93,5 +90,35 @@ class AuthViewModel(
 
     fun resetState() {
         _state.value = AuthUiState.Idle
+    }
+
+    /**
+     * Ubah pesan teknis Firebase Auth menjadi bahasa yang dimengerti user.
+     * Penyebab paling umum login gagal: akun di AGENTS.md belum didaftarkan
+     * di Firebase project ini (email/password tidak cocok ATAU dokumen
+     * users/{uid} belum ada di Firestore).
+     */
+    private fun friendlyAuthMessage(e: Exception): String {
+        val raw = e.message.orEmpty()
+        return when {
+            "Profil pengguna tidak ditemukan" in raw ->
+                "Akun ini belum terdaftar di aplikasi. " +
+                    "Daftar dulu lewat tombol Daftar Mahasiswa / Daftar Mentor."
+            "password is invalid" in raw
+                || "INVALID_LOGIN_CREDENTIALS" in raw
+                || "wrong-password" in raw
+                || "user-not-found" in raw
+                || "There is no user record" in raw ->
+                "Email atau kata sandi salah, atau akun belum terdaftar. " +
+                    "Periksa lagi, atau daftar dulu lewat tombol di bawah."
+            "badly formatted" in raw || "invalid-email" in raw ->
+                "Format email tidak valid. Periksa lagi penulisannya."
+            "network" in raw || "Network" in raw || "TIMEOUT" in raw ->
+                "Jaringan bermasalah. Periksa koneksi internet lalu coba lagi."
+            "too many requests" in raw || "TOO_MANY_ATTEMPTS" in raw ->
+                "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi."
+            raw.isNotBlank() -> "Login gagal: $raw"
+            else -> "Login gagal, coba lagi"
+        }
     }
 }

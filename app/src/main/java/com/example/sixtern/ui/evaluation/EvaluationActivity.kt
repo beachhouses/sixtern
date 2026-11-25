@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.sixtern.R
 import com.example.sixtern.databinding.ActivityEvaluationBinding
 import com.example.sixtern.ui.auth.LoginActivity
+import com.example.sixtern.ui.home.StudentNav
 
 class EvaluationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEvaluationBinding
@@ -16,6 +18,8 @@ class EvaluationActivity : AppCompatActivity() {
         setContentView(binding.root)
         val uid = intent.getStringExtra(LoginActivity.EXTRA_USER_ID).orEmpty()
         viewModel.load(uid)
+        binding.evalNav.itemIconTintList = null
+        StudentNav.setup(binding.evalNav, this, R.id.nav_evaluation, uid)
         viewModel.evaluation.observe(this) { evaluation ->
             if (evaluation != null) {
                 binding.totalText.text = evaluation.totalScore.toString()

@@ -10,8 +10,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sixtern.data.model.SixternUser
 import com.example.sixtern.data.repository.AuthRepository
+import com.example.sixtern.R
 import com.example.sixtern.databinding.ActivityProfileBinding
 import com.example.sixtern.ui.auth.LoginActivity
+import com.example.sixtern.ui.home.StudentNav
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
@@ -36,8 +38,11 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(binding.root)
         val uid = intent.getStringExtra(LoginActivity.EXTRA_USER_ID).orEmpty()
         viewModel.load(uid)
+        binding.profileNav.itemIconTintList = null
+        StudentNav.setup(binding.profileNav, this, R.id.nav_profile, uid)
         viewModel.user.observe(this) { user ->
             if (user != null) {
+                binding.avatarText.text = user.name.firstOrNull()?.uppercase() ?: "S"
                 binding.nameText.text = user.name
                 binding.emailText.text = user.email
                 binding.roleText.text = user.role

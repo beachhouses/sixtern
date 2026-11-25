@@ -3,11 +3,9 @@ package com.example.sixtern.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.sixtern.data.model.Company
 import com.example.sixtern.databinding.ActivityStudentRegisterBinding
 import com.example.sixtern.ui.home.StudentHomeActivity
 
@@ -15,33 +13,20 @@ class StudentRegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityStudentRegisterBinding
     private val viewModel: AuthViewModel by viewModels()
-    private var companies: List<Company> = emptyList()
-    private var selectedCompanyId: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityStudentRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel.loadCompanies()
-
-        viewModel.companies.observe(this) { list ->
-            companies = list
-            val names = list.map { it.name.ifBlank { it.id } }
-            val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, names)
-            binding.companyInput.setAdapter(adapter)
-        }
-
-        binding.companyInput.setOnItemClickListener { _, _, position, _ ->
-            selectedCompanyId = companies.getOrNull(position)?.id.orEmpty()
-        }
 
         binding.registerButton.setOnClickListener {
+            // companyId dikosongkan: tempat magang dipilih nanti di dashboard.
             viewModel.signUpStudent(
                 email = binding.emailInput.text.toString(),
                 password = binding.passwordInput.text.toString(),
                 name = binding.nameInput.text.toString(),
                 nim = binding.nimInput.text.toString(),
-                companyId = selectedCompanyId
+                companyId = ""
             )
         }
 

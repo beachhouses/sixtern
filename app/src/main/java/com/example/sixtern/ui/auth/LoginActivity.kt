@@ -3,7 +3,6 @@ package com.example.sixtern.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -22,19 +21,7 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val roles = listOf(
-            getString(R.string.role_mahasiswa),
-            getString(R.string.role_mentor)
-        )
-        val roleAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, roles)
-        binding.roleInput.setAdapter(roleAdapter)
-        binding.roleInput.setText(roles[0], false)
-
-        binding.roleInput.setOnItemClickListener { _, _, position, _ ->
-            viewModel.setRole(
-                if (position == 0) SixternUser.ROLE_MAHASISWA else SixternUser.ROLE_MENTOR
-            )
-        }
+        // Satu pintu: role TIDAK dipilih di login, ikut data Firestore user saat signIn.
 
         binding.loginButton.setOnClickListener {
             viewModel.signIn(
