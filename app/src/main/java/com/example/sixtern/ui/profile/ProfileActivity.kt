@@ -49,6 +49,12 @@ class ProfileActivity : AppCompatActivity() {
                 binding.nimText.text = user.nim ?: "-"
             }
         }
+        binding.editProfileButton.setOnClickListener {
+            val intent = Intent(this, StudentProfileEditActivity::class.java)
+            intent.putExtra(LoginActivity.EXTRA_USER_ID, uid)
+            startActivity(intent)
+        }
+
         binding.logoutButton.setOnClickListener {
             viewModel.logout()
             val intent = Intent(this, LoginActivity::class.java)

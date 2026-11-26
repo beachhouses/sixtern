@@ -9,11 +9,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sixtern.data.model.Company
 import com.example.sixtern.data.model.DAY_ORDER
+import com.example.sixtern.data.model.SixternUser
 import com.example.sixtern.data.model.WorkDaySchedule
 import com.example.sixtern.data.model.activeDays
 import com.example.sixtern.data.repository.AuthRepository
 import com.google.firebase.firestore.GeoPoint
 import java.io.ByteArrayOutputStream
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -46,10 +49,44 @@ class MentorProfileViewModel(
     private val _message = MutableLiveData<String?>()
     val message: LiveData<String?> = _message
 
+    private val _applicantCount = MutableLiveData(0)
+    val applicantCount: LiveData<Int> = _applicantCount
+
+    /** Status verifikasi akun mentor (pending), realtime — untuk guard nav. */
+    private val _accountPending = MutableLiveData(false)
+    val accountPending: LiveData<Boolean> = _accountPending
+
+    private var observeJob: Job? = null
+
     fun load(uid: String) {
         viewModelScope.launch {
+            // Status verifikasi akun (realtime): verifikasi prodi langsung
+            // membuka nav Peserta tanpa login ulang.
             try {
-                _company.value = repository.getCompanyByMentor(uid)
+                val user = repository.getUser(uid)
+                _accountPending.value =
+                    user?.accountStatus == SixternUser.ACCOUNT_PENDING
+            } catch (e: Exception) {
+                _accountPending.value = false
+            }
+            viewModelScope.launch {
+                repository.observeUserByUid(uid).collectLatest { observed ->
+                    _accountPending.value =
+                        observed?.accountStatus == SixternUser.ACCOUNT_PENDING
+                }
+            }
+            try {
+                val company = repository.getCompanyByMentor(uid)
+                _company.value = company
+                observeJob?.cancel()
+                if (company == null) {
+                    _applicantCount.value = 0
+                    return@launch
+                }
+                observeJob = viewModelScope.launch {
+                    repository.observeStudentsByCompany(company.id)
+                        .collectLatest { list -> _applicantCount.value = list.size }
+                }
             } catch (e: Exception) {
                 _message.value = e.message ?: "Gagal memuat profil perusahaan"
             }
@@ -140,7 +177,10 @@ class MentorProfileViewModel(
                     endTime = first.end.ifBlank { "17:00" },
                     workSchedule = scheduleMap,
                     location = GeoPoint(latitude, longitude),
-                    radiusMeters = radius
+                    radiusMeters = radius,
+                    // Pertahankan status verifikasi prodi saat menyimpan ulang;
+                    // perusahaan baru tetap di-set false oleh repository.
+                    verified = existing?.verified ?: true
                 )
                 _company.value = repository.saveCompany(company)
                 _message.value = "Profil perusahaan tersimpan"

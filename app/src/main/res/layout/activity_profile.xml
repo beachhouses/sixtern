@@ -78,6 +78,20 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/accountPendingText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_login_input"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="@string/student_pending_profile_notice"
+                android:textColor="@color/login_button"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -106,11 +120,24 @@
             </LinearLayout>
 
             <Button
+                android:id="@+id/editProfileButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_login_button"
+                android:backgroundTint="@null"
+                android:text="@string/edit_profile"
+                android:textAllCaps="false"
+                android:textColor="@color/login_button_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Button
                 android:id="@+id/logoutButton"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
                 android:text="@string/logout"

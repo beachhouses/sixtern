@@ -92,6 +92,80 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/greetingText" />
 
+            <!-- Kartu menunggu verifikasi prodi (akun / perusahaan).
+                 Kartu ini tampil di ATAS; kartu perusahaan di bawahnya tetap
+                 terbuka agar mentor bisa update info perusahaan. -->
+            <LinearLayout
+                android:id="@+id/waitingCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_login_card"
+                android:elevation="2dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="28dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/homeSubtitle">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mentor_account_pending_title"
+                    android:textColor="@color/login_button"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/waitingMessageText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.4"
+                    android:textColor="@color/login_text_secondary"
+                    android:textSize="13sp" />
+
+                <!-- Kelola peserta terkunci saat menunggu: tampilkan info singkat. -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="@string/mentor_account_pending_notice"
+                    android:textColor="@color/login_text_secondary"
+                    android:textSize="12sp" />
+
+                <!-- Profil perusahaan tetap boleh diedit selama menunggu verifikasi -->
+                <Button
+                    android:id="@+id/waitingManageButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_login_button"
+                    android:backgroundTint="@null"
+                    android:text="@string/mentor_home_company_button"
+                    android:textAllCaps="false"
+                    android:textColor="@color/login_button_text"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/waitingLogoutButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_button_outline_plum"
+                    android:backgroundTint="@null"
+                    android:text="@string/mentor_account_pending_logout"
+                    android:textAllCaps="false"
+                    android:textColor="@color/login_button"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/applicantsNoticeCard"
                 android:layout_width="0dp"
@@ -104,7 +178,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/homeSubtitle">
+                app:layout_constraintTop_toBottomOf="@id/waitingCard">
 
                 <TextView
                     android:id="@+id/applicantsBadge"
@@ -196,6 +270,15 @@
                     android:text="@string/mentor_home_subtitle"
                     android:textColor="@color/login_text_primary"
                     android:textSize="14sp" />
+
+                <!-- Status verifikasi perusahaan oleh prodi -->
+                <TextView
+                    android:id="@+id/companyVerifiedText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/companyButton"

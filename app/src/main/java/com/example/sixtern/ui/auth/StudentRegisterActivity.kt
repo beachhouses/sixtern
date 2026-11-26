@@ -6,8 +6,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.sixtern.R
 import com.example.sixtern.databinding.ActivityStudentRegisterBinding
-import com.example.sixtern.ui.home.StudentHomeActivity
 
 class StudentRegisterActivity : AppCompatActivity() {
 
@@ -36,11 +36,11 @@ class StudentRegisterActivity : AppCompatActivity() {
                 is AuthUiState.Loading -> showLoading(true)
                 is AuthUiState.Success -> {
                     showLoading(false)
-                    val intent = Intent(this, StudentHomeActivity::class.java)
-                    intent.putExtra(LoginActivity.EXTRA_USER_NAME, state.user.name)
-                    intent.putExtra(LoginActivity.EXTRA_USER_ID, state.user.uid)
-                    startActivity(intent)
-                    finish()
+                    // Pendaftar baru pending — arahkan ke login agar masuk
+                    // dalam mode terbatas (lengkapi profil dulu).
+                    Toast.makeText(this, getString(R.string.register_student_pending_toast), Toast.LENGTH_LONG).show()
+                    startActivity(Intent(this, LoginActivity::class.java)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
                     viewModel.resetState()
                 }
                 is AuthUiState.Error -> {

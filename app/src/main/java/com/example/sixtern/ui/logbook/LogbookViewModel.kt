@@ -5,11 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sixtern.data.model.Logbook
+import com.example.sixtern.data.model.SixternUser
+import com.example.sixtern.data.repository.AuthRepository
 import com.example.sixtern.data.repository.InternshipRepository
 import kotlinx.coroutines.launch
 
 class LogbookViewModel(
-    private val repository: InternshipRepository = InternshipRepository()
+    private val repository: InternshipRepository = InternshipRepository(),
+    private val authRepository: AuthRepository = AuthRepository()
 ) : ViewModel() {
 
     private val _logbooks = MutableLiveData<List<Logbook>>(emptyList())
@@ -27,11 +30,34 @@ class LogbookViewModel(
     private var studentId: String = ""
     private var companyId: String = ""
 
-    fun init(studentId: String, companyId: String) {
+    /**
+     * True bila mahasiswa sudah diterima & punya tempat magang (hasil cek
+     * data user terbaru dari Firestore). Layar memakai ini untuk memilih
+     * antara daftar logbook normal vs kartu "belum ada tempat magang".
+     */
+    private val _companyReady = MutableLiveData<Boolean>()
+    val companyReady: LiveData<Boolean> = _companyReady
+
+    fun init(studentId: String, intentCompanyId: String) {
         this.studentId = studentId
-        this.companyId = companyId
-        refresh()
+        // Selalu cek data user terbaru — intent bisa basi atau tidak
+        // membawa companyId (tombol + pernah membuka form tanpa extra).
+        viewModelScope.launch {
+            val user = try {
+                authRepository.getUser(studentId)
+            } catch (e: Exception) {
+                null
+            }
+            val accepted = user?.internshipStatus == SixternUser.STATUS_ACCEPTED
+            val freshCompanyId = user?.companyId.orEmpty()
+            companyId = if (accepted && freshCompanyId.isNotBlank()) freshCompanyId else ""
+            _companyReady.value = companyId.isNotBlank()
+            refresh()
+        }
     }
+
+    /** companyId segar hasil cek Firestore — dipakai intent ke form & nav. */
+    fun currentCompanyId(): String = companyId
 
     fun setFilter(filter: String) {
         _filter.value = filter
@@ -63,7 +89,7 @@ class LogbookViewModel(
         }
     }
 
-    fun save(title: String, description: String, editingId: String?) {
+    fun save(title: String, description: String, editingId: String?, attachmentUrl: String? = null) {
         if (title.isBlank()) {
             _message.value = "Judul wajib diisi"
             return
@@ -72,19 +98,35 @@ class LogbookViewModel(
             _message.value = "Keterangan wajib diisi"
             return
         }
-        if (editingId.isNullOrBlank() && companyId.isBlank()) {
-            _message.value = "Pilih tempat magang dulu di beranda"
-            return
-        }
         _saving.value = true
         viewModelScope.launch {
             try {
+                // Logbook baru butuh companyId; bila masih kosong, cek ulang
+                // data user (mungkin intent form tidak membawanya).
+                if (editingId.isNullOrBlank() && companyId.isBlank()) {
+                    val user = try {
+                        authRepository.getUser(studentId)
+                    } catch (e: Exception) {
+                        null
+                    }
+                    val accepted = user?.internshipStatus == SixternUser.STATUS_ACCEPTED
+                    companyId = if (accepted) user?.companyId.orEmpty() else ""
+                }
+                if (editingId.isNullOrBlank() && companyId.isBlank()) {
+                    _message.value = "Pilih tempat magang dulu di beranda"
+                    _saving.value = false
+                    return@launch
+                }
                 if (editingId.isNullOrBlank()) {
-                    repository.addLogbook(studentId, companyId, title.trim(), description.trim())
-                    _message.value = "Logbook tersimpan"
+                    repository.addLogbook(
+                        studentId, companyId, title.trim(), description.trim(), attachmentUrl
+                    )
+                    _message.value = "Logbook terkirim, menunggu review mentor"
                 } else {
-                    repository.updateLogbookRevision(editingId, title.trim(), description.trim())
-                    _message.value = "Revisi terkirim"
+                    repository.updateLogbookRevision(
+                        editingId, title.trim(), description.trim(), attachmentUrl
+                    )
+                    _message.value = "Revisi terkirim, menunggu review mentor"
                 }
                 _logbooks.value = repository.getLogbooks(studentId)
             } catch (e: Exception) {

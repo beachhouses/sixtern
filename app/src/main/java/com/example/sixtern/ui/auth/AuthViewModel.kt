@@ -81,9 +81,35 @@ class AuthViewModel(
                 val user = repository.signUpStudent(
                     email.trim(), password, name.trim(), nim.trim(), companyId
                 )
+                // Pendaftar baru pending — langsung masuk dalam mode terbatas.
                 _state.value = AuthUiState.Success(user)
             } catch (e: Exception) {
-                _state.value = AuthUiState.Error(e.message ?: "Pendaftaran gagal, coba lagi")
+                _state.value = AuthUiState.Error(friendlyAuthMessage(e))
+            }
+        }
+    }
+
+    fun signUpMentorBasic(
+        email: String,
+        password: String,
+        name: String
+    ) {
+        if (name.isBlank()) {
+            _state.value = AuthUiState.Error("Nama wajib diisi")
+            return
+        }
+        if (email.isBlank() || password.length < 6) {
+            _state.value = AuthUiState.Error("Email wajib diisi dan kata sandi minimal 6 karakter")
+            return
+        }
+        _state.value = AuthUiState.Loading
+        viewModelScope.launch {
+            try {
+                val user = repository.signUpMentorBasic(email.trim(), password, name.trim())
+                // Pendaftar baru pending — langsung masuk dalam mode terbatas.
+                _state.value = AuthUiState.Success(user)
+            } catch (e: Exception) {
+                _state.value = AuthUiState.Error(friendlyAuthMessage(e))
             }
         }
     }
@@ -101,6 +127,12 @@ class AuthViewModel(
     private fun friendlyAuthMessage(e: Exception): String {
         val raw = e.message.orEmpty()
         return when {
+            "ACCOUNT_PENDING" in raw ->
+                "Pendaftaranmu masih menunggu persetujuan prodi. " +
+                    "Coba masuk lagi setelah akunmu disetujui."
+            "ACCOUNT_REJECTED" in raw ->
+                "Pendaftaran akunmu ditolak oleh prodi. " +
+                    "Hubungi prodi untuk informasi lebih lanjut."
             "Profil pengguna tidak ditemukan" in raw ->
                 "Akun ini belum terdaftar di aplikasi. " +
                     "Daftar dulu lewat tombol Daftar Mahasiswa / Daftar Mentor."

@@ -65,6 +65,8 @@ class LoginActivity : AppCompatActivity() {
         Toast.makeText(this, getString(R.string.login_welcome, user.name), Toast.LENGTH_SHORT).show()
         val intent = when (user.role) {
             SixternUser.ROLE_MENTOR -> Intent(this, MentorHomeActivity::class.java)
+            SixternUser.ROLE_PRODI ->
+                Intent(this, com.example.sixtern.ui.prodi.ProdiHomeActivity::class.java)
             else -> Intent(this, StudentHomeActivity::class.java)
         }
         intent.putExtra(EXTRA_USER_NAME, user.name)

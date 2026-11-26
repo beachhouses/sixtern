@@ -1,10 +1,15 @@
 package com.example.sixtern.data.repository
 
+import com.example.sixtern.data.model.CampusInfo
 import com.example.sixtern.data.model.Company
 import com.example.sixtern.data.model.DAY_ORDER
 import com.example.sixtern.data.model.SixternUser
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class AuthRepository(
@@ -14,7 +19,19 @@ class AuthRepository(
     suspend fun signIn(email: String, password: String): SixternUser {
         val result = auth.signInWithEmailAndPassword(email, password).await()
         val uid = result.user?.uid ?: throw IllegalStateException("UID kosong setelah login")
-        return getUser(uid) ?: throw IllegalStateException("Profil pengguna tidak ditemukan")
+        val user = getUser(uid) ?: throw IllegalStateException("Profil pengguna tidak ditemukan")
+        // Akun baru menunggu persetujuan prodi sebelum fitur penuh terbuka.
+        // Mahasiswa & mentor yang masih pending TETAP boleh masuk: aplikasi
+        // mengarahkan mereka ke mode terbatas (mahasiswa: hanya melengkapi
+        // profil; mentor: kartu menunggu verifikasi) sampai prodi menyetujui.
+        when (user.accountStatus) {
+            SixternUser.ACCOUNT_PENDING ->
+                if (user.role == SixternUser.ROLE_PRODI) {
+                    throw IllegalStateException("ACCOUNT_PENDING")
+                }
+            SixternUser.ACCOUNT_REJECTED -> throw IllegalStateException("ACCOUNT_REJECTED")
+        }
+        return user
     }
 
     suspend fun signUpStudent(
@@ -32,7 +49,10 @@ class AuthRepository(
             name = name,
             email = email,
             nim = nim,
-            companyId = companyId.ifBlank { null }
+            companyId = companyId.ifBlank { null },
+            // Pendaftar baru selalu pending: bisa login tetapi mode terbatas
+            // (hanya melengkapi profil) sampai prodi menyetujui.
+            accountStatus = SixternUser.ACCOUNT_PENDING
         )
         saveUser(user)
         return user
@@ -49,7 +69,10 @@ class AuthRepository(
             uid = uid,
             role = SixternUser.ROLE_MENTOR,
             name = name,
-            email = email
+            email = email,
+            // Pendaftar baru selalu pending: tetap bisa login dalam mode
+            // terbatas (Beranda, Notifikasi, Akun) sampai prodi menyetujui.
+            accountStatus = SixternUser.ACCOUNT_PENDING
         )
         saveUser(user)
         return user
@@ -67,7 +90,8 @@ class AuthRepository(
             uid = uid,
             role = SixternUser.ROLE_MENTOR,
             name = name,
-            email = email
+            email = email,
+            accountStatus = SixternUser.ACCOUNT_VERIFIED
         )
         saveUser(user)
         val companyRef = firestore.collection(Company.COLLECTION).document()
@@ -110,7 +134,9 @@ class AuthRepository(
                 mapOf("start" to v.start, "end" to v.end)
             },
             "location" to saved.location,
-            "radiusMeters" to saved.radiusMeters
+            "radiusMeters" to saved.radiusMeters,
+            // Perusahaan baru belum terverifikasi; yang lama mempertahankan statusnya.
+            "verified" to if (company.id.isBlank()) false else saved.verified
         )
         ref.set(payload).await()
         return saved
@@ -122,7 +148,34 @@ class AuthRepository(
     }
 
     suspend fun saveUser(user: SixternUser) {
-        firestore.collection(SixternUser.COLLECTION).document(user.uid).set(user).await()
+        // Tulis sebagai Map eksplisit agar field accountStatus selalu tersimpan
+        // ke Firestore — tidak bergantung pada default value serializer Kotlin.
+        val payload = hashMapOf(
+            "uid" to user.uid,
+            "role" to user.role,
+            "name" to user.name,
+            "email" to user.email,
+            "nim" to (user.nim ?: ""),
+            "major" to user.major,
+            "university" to user.university,
+            "photoUrl" to (user.photoUrl ?: ""),
+            "companyId" to (user.companyId ?: ""),
+            "bio" to user.bio,
+            "age" to user.age,
+            "phone" to user.phone,
+            "skills" to user.skills,
+            "portfolioUrl" to user.portfolioUrl,
+            "cvUrl" to user.cvUrl,
+            "internshipStatus" to user.internshipStatus,
+            "rejectionReason" to user.rejectionReason,
+            "statusUpdatedAt" to user.statusUpdatedAt,
+            // Periode magang + surat permohonan (wajib diisi saat mengajukan).
+            "internshipStartDate" to user.internshipStartDate,
+            "internshipEndDate" to user.internshipEndDate,
+            "applicationLetterUrl" to user.applicationLetterUrl,
+            "accountStatus" to user.accountStatus
+        )
+        firestore.collection(SixternUser.COLLECTION).document(user.uid).set(payload).await()
     }
 
     /**
@@ -146,7 +199,113 @@ class AuthRepository(
             .sortedBy { it.name.lowercase() }
     }
 
-    suspend fun getCompanies(forceServer: Boolean = false): List<Company> {
+    /**
+     * Versi realtime dari getStudentsByCompany.
+     * Firestore addSnapshotListener push update setiap ada perubahan dokumen
+     * di koleksi users yang companyId-nya cocok — tanpa perlu polling.
+     */
+    /** Update field profil tambahan mahasiswa (bio, age, phone, skills, portfolioUrl). */
+    suspend fun updateStudentProfile(
+        uid: String,
+        bio: String,
+        age: String,
+        phone: String,
+        skills: List<String>,
+        portfolioUrl: String,
+        cvUrl: String = ""
+    ) {
+        firestore.collection(SixternUser.COLLECTION).document(uid).update(
+            mapOf(
+                "bio" to bio,
+                "age" to age,
+                "phone" to phone,
+                "skills" to skills,
+                "portfolioUrl" to portfolioUrl,
+                "cvUrl" to cvUrl
+            )
+        ).await()
+    }
+
+    /** Observe dokumen user (mahasiswa) secara realtime — untuk notifikasi status pengajuan. */
+    fun observeUserByUid(uid: String): Flow<SixternUser?> = callbackFlow {
+        if (uid.isBlank()) {
+            trySend(null)
+            close()
+            return@callbackFlow
+        }
+        val registration = firestore.collection(SixternUser.COLLECTION).document(uid)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null || snapshot == null || !snapshot.exists()) {
+                    trySend(null)
+                    return@addSnapshotListener
+                }
+                val user = try { snapshot.toObject(SixternUser::class.java) } catch (e: Exception) { null }
+                trySend(user)
+            }
+        awaitClose { registration.remove() }
+    }
+
+    /** Update status pengajuan magang mahasiswa (accepted/rejected) + alasan tolak. */
+    suspend fun updateInternshipStatus(uid: String, status: String, reason: String) {
+        firestore.collection(SixternUser.COLLECTION).document(uid).update(
+            mapOf(
+                "internshipStatus" to status,
+                "rejectionReason" to reason,
+                "statusUpdatedAt" to System.currentTimeMillis()
+            )
+        ).await()
+    }
+
+    /**
+     * Batalkan / reset status pengajuan: companyId & periode + surat dihapus,
+     * status direset pending agar mahasiswa bebas mengajukan ke tempat lain.
+     */
+    suspend fun removeStudentFromCompany(uid: String) {
+        firestore.collection(SixternUser.COLLECTION).document(uid).update(
+            mapOf(
+                "companyId" to FieldValue.delete(),
+                "internshipStatus" to SixternUser.STATUS_PENDING,
+                "rejectionReason" to "",
+                "internshipStartDate" to "",
+                "internshipEndDate" to "",
+                "applicationLetterUrl" to "",
+                "statusUpdatedAt" to System.currentTimeMillis()
+            )
+        ).await()
+    }
+
+    fun observeStudentsByCompany(companyId: String): Flow<List<SixternUser>> = callbackFlow {
+        if (companyId.isBlank()) {
+            trySend(emptyList())
+            close()
+            return@callbackFlow
+        }
+        val registration = firestore.collection(SixternUser.COLLECTION)
+            .whereEqualTo("companyId", companyId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null || snapshot == null) {
+                    trySend(emptyList())
+                    return@addSnapshotListener
+                }
+                val list = snapshot.documents.mapNotNull { doc ->
+                    try { doc.toObject(SixternUser::class.java) } catch (e: Exception) { null }
+                }.filter { it.role == SixternUser.ROLE_MAHASISWA }
+                    .sortedBy { it.name.lowercase() }
+                trySend(list)
+            }
+        awaitClose { registration.remove() }
+    }
+
+    /**
+     * Daftar semua perusahaan.
+     * @param verifiedOnly true = hanya perusahaan yang sudah disetujui prodi
+     * (dipakai daftar pilihan mahasiswa; perusahaan baru mentor selalu
+     * menunggu verifikasi dan tidak boleh dipilih mahasiswa).
+     */
+    suspend fun getCompanies(
+        forceServer: Boolean = false,
+        verifiedOnly: Boolean = false
+    ): List<Company> {
         val query = firestore.collection(Company.COLLECTION)
         val snapshot = if (forceServer) {
             // Muat Ulang di beranda: paksa baca dari server agar dokumen
@@ -157,6 +316,7 @@ class AuthRepository(
             query.get().await()
         }
         return snapshot.documents.mapNotNull { normalizeCompany(it.id, it.data) }
+            .filter { !verifiedOnly || it.verified }
     }
 
     /**
@@ -175,6 +335,69 @@ class AuthRepository(
             if (cid.isNotBlank()) counts[cid] = (counts[cid] ?: 0) + 1
         }
         return counts
+    }
+
+    // ===================== Fungsi untuk role Prodi =====================
+
+    /** Daftar user per role, realtime (mahasiswa / mentor / prodi). */
+    fun observeUsersByRole(role: String): Flow<List<SixternUser>> = callbackFlow {
+        if (role.isBlank()) {
+            trySend(emptyList())
+            close()
+            return@callbackFlow
+        }
+        val registration = firestore.collection(SixternUser.COLLECTION)
+            .whereEqualTo("role", role)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null || snapshot == null) {
+                    trySend(emptyList())
+                    return@addSnapshotListener
+                }
+                val list = snapshot.documents.mapNotNull { doc ->
+                    try { doc.toObject(SixternUser::class.java) } catch (e: Exception) { null }
+                }.sortedBy { it.name.lowercase() }
+                trySend(list)
+            }
+        awaitClose { registration.remove() }
+    }
+
+    /** Setujui / tolak pendaftaran akun (mahasiswa & mentor) oleh prodi. */
+    suspend fun updateAccountStatus(uid: String, status: String) {
+        firestore.collection(SixternUser.COLLECTION).document(uid)
+            .update(mapOf("accountStatus" to status)).await()
+    }
+
+    /** Daftar semua perusahaan, realtime — untuk verifikasi & statistik prodi. */
+    fun observeCompaniesRealtime(): Flow<List<Company>> = callbackFlow {
+        val registration = firestore.collection(Company.COLLECTION)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null || snapshot == null) {
+                    trySend(emptyList())
+                    return@addSnapshotListener
+                }
+                val list = snapshot.documents.mapNotNull { normalizeCompany(it.id, it.data) }
+                    .sortedBy { it.name.lowercase() }
+                trySend(list)
+            }
+        awaitClose { registration.remove() }
+    }
+
+    /** Verifikasi / batalkan verifikasi perusahaan oleh prodi. */
+    suspend fun updateCompanyVerified(companyId: String, verified: Boolean) {
+        firestore.collection(Company.COLLECTION).document(companyId)
+            .update(mapOf("verified" to verified)).await()
+    }
+
+    /** Identitas kampus (nama, prodi, logo) — dokumen tunggal campus/info. */
+    suspend fun getCampusInfo(): CampusInfo? {
+        val doc = firestore.collection(CampusInfo.COLLECTION)
+            .document(CampusInfo.DOC_ID).get().await()
+        return if (doc.exists()) doc.toObject(CampusInfo::class.java) else null
+    }
+
+    suspend fun saveCampusInfo(info: CampusInfo) {
+        firestore.collection(CampusInfo.COLLECTION)
+            .document(CampusInfo.DOC_ID).set(info).await()
     }
 
     companion object {
@@ -215,7 +438,8 @@ class AuthRepository(
                 .ifBlank { "17:00" },
             workSchedule = workSchedule,
             location = data["location"] as? com.google.firebase.firestore.GeoPoint,
-            radiusMeters = num("radiusMeters", 100.0).toDouble()
+            radiusMeters = num("radiusMeters", 100.0).toDouble(),
+            verified = data["verified"] as? Boolean ?: true
         )
     }
 

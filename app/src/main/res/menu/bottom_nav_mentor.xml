@@ -5,6 +5,14 @@
         android:icon="@drawable/ic_nav_home"
         android:title="@string/menu_home" />
     <item
+        android:id="@+id/nav_participants"
+        android:icon="@drawable/ic_nav_people"
+        android:title="@string/menu_participants" />
+    <item
+        android:id="@+id/nav_notification"
+        android:icon="@drawable/ic_nav_notification"
+        android:title="@string/menu_notification" />
+    <item
         android:id="@+id/nav_account"
         android:icon="@drawable/ic_nav_profile"
         android:title="@string/menu_account" />

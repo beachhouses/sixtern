@@ -87,6 +87,68 @@
             android:exported="false"
             android:theme="@style/Theme.Sixtern.Login" />
 
+        <activity
+            android:name=".ui.notification.MentorNotificationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+
+        <activity
+            android:name=".ui.applicant.ApplicantDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+        <activity
+            android:name=".ui.profile.StudentProfileEditActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+        <activity
+            android:name=".ui.notification.StudentNotificationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+        <activity
+            android:name=".ui.participants.MentorParticipantsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+        <activity
+            android:name=".ui.prodi.ProdiHomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+        <activity
+            android:name=".ui.prodi.ProdiVerificationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+        <activity
+            android:name=".ui.prodi.ProdiProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+        <activity
+            android:name=".ui.attendance.AttendanceReportActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+        <activity
+            android:name=".ui.logbook.LogbookReviewDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
+        <!-- Berbagi file PDF sementara (surat permohonan) ke viewer eksternal. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
     </application>
 
 </manifest>

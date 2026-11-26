@@ -73,53 +73,221 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/bg_home_card"
                 android:elevation="2dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:padding="20dp">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/avatarText"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_icon_circle"
+                        android:gravity="center"
+                        android:text="S"
+                        android:textColor="@color/login_button"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/greetingText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Halo!"
+                            android:textColor="@color/login_text_primary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/nimText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="-"
+                            android:textColor="@color/login_text_secondary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/universityText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-"
+                            android:textColor="@color/login_text_secondary"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Progres magang: hari berjalan dari total periode (Mode 1) -->
+                <LinearLayout
+                    android:id="@+id/internshipProgressGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/internship_progress_title"
+                            android:textColor="@color/login_text_secondary"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/internshipProgressText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/sixtern_green_deep"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/internshipProgressBar"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="8dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/progress_internship" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- MODE 0: akun menunggu verifikasi prodi (hanya bisa melengkapi profil) -->
+            <LinearLayout
+                android:id="@+id/verificationGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_home_card"
+                    android:elevation="2dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:padding="28dp">
+
+                    <TextView
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_icon_circle"
+                        android:gravity="center"
+                        android:text="&#8987;"
+                        android:textSize="26sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="@string/student_pending_title"
+                        android:textColor="@color/login_button"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:lineSpacingMultiplier="1.4"
+                        android:text="@string/student_pending_message"
+                        android:textColor="@color/login_text_secondary"
+                        android:textSize="13sp" />
+
+                    <Button
+                        android:id="@+id/pendingEditProfileButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/bg_login_button"
+                        android:backgroundTint="@null"
+                        android:text="@string/student_pending_edit_profile"
+                        android:textAllCaps="false"
+                        android:textColor="@color/login_button_text"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Kartu notifikasi status pengajuan magang (realtime dari Firestore) -->
+            <LinearLayout
+                android:id="@+id/applicationNoticeCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_notice_accepted"
+                android:elevation="2dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:visibility="gone">
+
                 <TextView
-                    android:id="@+id/avatarText"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
+                    android:id="@+id/noticeIcon"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     android:background="@drawable/bg_icon_circle"
                     android:gravity="center"
-                    android:text="S"
-                    android:textColor="@color/login_button"
-                    android:textSize="22sp"
+                    android:text="✓"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
+                    android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/greetingText"
+                        android:id="@+id/noticeTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Halo!"
-                        android:textColor="@color/login_text_primary"
-                        android:textSize="18sp"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/nimText"
+                        android:id="@+id/noticeBody"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="-"
-                        android:textColor="@color/login_text_secondary"
+                        android:textColor="@android:color/white"
                         android:textSize="13sp" />
 
                     <TextView
-                        android:id="@+id/universityText"
+                        android:id="@+id/noticeReason"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="-"
-                        android:textColor="@color/login_text_secondary"
-                        android:textSize="13sp" />
+                        android:layout_marginTop="4dp"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -148,6 +316,52 @@
                         android:textColor="@color/login_text_primary"
                         android:textSize="14sp"
                         android:textStyle="bold" />
+
+                    <!-- Baris 2 kolom: tanggal hari ini | jam masuk - pulang -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:background="@drawable/bg_icon_circle"
+                                android:contentDescription="@string/radius_title"
+                                android:padding="5dp"
+                                android:src="@drawable/ic_calendar"
+                                app:tint="@color/login_button" />
+
+                            <TextView
+                                android:id="@+id/todayDateText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:text="-"
+                                android:textColor="@color/login_text_primary"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/todayTimesText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="-"
+                            android:textColor="@color/login_text_secondary"
+                            android:textSize="13sp" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -214,6 +428,21 @@
                         </LinearLayout>
                     </LinearLayout>
 
+                    <!-- Status bila sudah absen masuk + pulang -->
+                    <TextView
+                        android:id="@+id/attendanceDoneText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/bg_login_input"
+                        android:gravity="center"
+                        android:padding="12dp"
+                        android:text="@string/attendance_done_today"
+                        android:textColor="@color/sixtern_green_deep"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -252,6 +481,65 @@
                             app:strokeColor="@color/login_button"
                             app:strokeWidth="1dp" />
                     </LinearLayout>
+                </LinearLayout>
+
+                <!-- Badge shortcut logbook harian (bawah kartu absensi).
+                     Hanya tampil di Mode 1 bila belum isi logbook hari ini. -->
+                <LinearLayout
+                    android:id="@+id/dailyLogbookCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_home_card"
+                    android:clickable="true"
+                    android:elevation="2dp"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_icon_circle"
+                        android:contentDescription="@string/daily_logbook_title"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_timer"
+                        app:tint="@color/login_button" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/daily_logbook_title"
+                            android:textColor="@color/login_text_primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/dailyLogbookStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="@color/login_text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="&#8250;"
+                        android:textColor="@color/login_text_secondary"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <!-- Statistik -->

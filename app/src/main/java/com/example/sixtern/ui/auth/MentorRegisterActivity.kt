@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.sixtern.R
 import com.example.sixtern.databinding.ActivityMentorRegisterBinding
 
 class MentorRegisterActivity : AppCompatActivity() {
@@ -32,11 +33,12 @@ class MentorRegisterActivity : AppCompatActivity() {
                 is AuthUiState.Loading -> showLoading(true)
                 is AuthUiState.Success -> {
                     showLoading(false)
-                    val intent = Intent(this, MentorHomeActivity::class.java)
-                    intent.putExtra(LoginActivity.EXTRA_USER_NAME, state.user.name)
-                    intent.putExtra(LoginActivity.EXTRA_USER_ID, state.user.uid)
-                    startActivity(intent)
-                    finish()
+                    // Pendaftar baru menunggu verifikasi prodi — arahkan ke
+                    // login; mentor tetap bisa masuk dalam mode terbatas
+                    // (Beranda, Notifikasi, Akun) sambil menunggu disetujui.
+                    Toast.makeText(this, getString(R.string.register_mentor_pending_toast), Toast.LENGTH_LONG).show()
+                    startActivity(Intent(this, LoginActivity::class.java)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
                     viewModel.resetState()
                 }
                 is AuthUiState.Error -> {

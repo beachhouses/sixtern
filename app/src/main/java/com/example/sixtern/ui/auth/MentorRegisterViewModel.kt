@@ -33,6 +33,7 @@ class MentorRegisterViewModel(
                 val user = repository.signUpMentorBasic(
                     email.trim(), password, name.trim()
                 )
+                // Akun langsung verified — tidak perlu sign-out, langsung masuk.
                 _state.value = AuthUiState.Success(user)
             } catch (e: Exception) {
                 _state.value = AuthUiState.Error(e.message ?: "Pendaftaran gagal, coba lagi")

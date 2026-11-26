@@ -108,6 +108,30 @@ class MentorProfileActivity : AppCompatActivity() {
         buildScheduleRows()
         ensureBenefitRow("")
 
+        // Guard nav disamakan dengan Beranda & Notifikasi: menunggu verifikasi
+        // hanya mengunci tab Peserta; Akun tetap terbuka penuh (update info).
+        viewModel.accountPending.observe(this) { pending ->
+            MentorNav.setup(
+                binding.mentorNav, this, R.id.nav_account, uid, name,
+                actionsBlocked = pending
+            )
+        }
+        viewModel.company.observe(this) { company ->
+            // Selama perusahaan belum diverifikasi prodi: hanya Peserta yang
+            // terkunci (Beranda, Notifikasi & Akun tetap terbuka agar profil
+            // perusahaan boleh diedit/diperbarui sambil menunggu).
+            MentorNav.setup(
+                binding.mentorNav, this, R.id.nav_account, uid, name,
+                actionsBlocked = viewModel.accountPending.value == true ||
+                    (company != null && !company.verified)
+            )
+        }
+
+        // Muat jumlah pengajuan untuk badge notifikasi di bottom nav.
+        viewModel.applicantCount.observe(this) { count ->
+            MentorNav.setBadge(binding.mentorNav, count)
+        }
+
         binding.greetingText.text = if (name.isBlank()) {
             getString(R.string.mentor_home_greeting_fallback)
         } else {

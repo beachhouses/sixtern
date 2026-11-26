@@ -13,6 +13,10 @@
         android:icon="@drawable/ic_nav_evaluation"
         android:title="@string/menu_evaluation" />
     <item
+        android:id="@+id/nav_notification"
+        android:icon="@drawable/ic_nav_notification"
+        android:title="@string/menu_notification" />
+    <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/ic_nav_profile"
         android:title="@string/menu_profile" />

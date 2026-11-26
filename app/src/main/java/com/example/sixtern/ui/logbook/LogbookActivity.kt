@@ -29,9 +29,13 @@ class LogbookActivity : AppCompatActivity() {
         companyId = intent.getStringExtra(EXTRA_COMPANY_ID).orEmpty()
         adapter = LogbookAdapter { logbook ->
             val intent = Intent(this, LogbookFormActivity::class.java)
+            intent.putExtra(LoginActivity.EXTRA_USER_ID, studentId)
+            intent.putExtra(EXTRA_COMPANY_ID, viewModel.currentCompanyId())
             intent.putExtra(LogbookFormActivity.EXTRA_ID, logbook.id)
             intent.putExtra(LogbookFormActivity.EXTRA_TITLE, logbook.title)
             intent.putExtra(LogbookFormActivity.EXTRA_DESC, logbook.description)
+            // Catatan mentor terakhir ikut dibawa agar form menampilkannya (read-only).
+            intent.putExtra(LogbookFormActivity.EXTRA_NOTES, logbook.mentorNotes.orEmpty())
             startActivity(intent)
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
@@ -41,11 +45,29 @@ class LogbookActivity : AppCompatActivity() {
         viewModel.init(studentId, companyId)
         setupTabs()
         binding.addButton.setOnClickListener {
-            startActivity(Intent(this, LogbookFormActivity::class.java))
+            // Wajib membawa uid + companyId: tanpa ini form menganggap
+            // mahasiswa belum punya tempat magang dan simpan ditolak.
+            val intent = Intent(this, LogbookFormActivity::class.java)
+            intent.putExtra(LoginActivity.EXTRA_USER_ID, studentId)
+            intent.putExtra(EXTRA_COMPANY_ID, viewModel.currentCompanyId())
+            startActivity(intent)
         }
         binding.swipeRefresh.setOnRefreshListener { viewModel.refresh() }
         viewModel.logbooks.observe(this) { render() }
         viewModel.filter.observe(this) { render() }
+        // Belum punya tempat magang -> kartu pesan; daftar/tab/FAB disembunyikan.
+        viewModel.companyReady.observe(this) { ready ->
+            if (ready == null) return@observe
+            binding.noCompanyCard.visibility = if (ready) View.GONE else View.VISIBLE
+            binding.tabLayout.visibility = if (ready) View.VISIBLE else View.GONE
+            binding.swipeRefresh.visibility = if (ready) View.VISIBLE else View.GONE
+            binding.addButton.visibility = if (ready) View.VISIBLE else View.GONE
+            // Nav di-set ulang dengan companyId segar hasil cek Firestore.
+            StudentNav.setup(
+                binding.logbookNav, this, R.id.nav_logbook, studentId,
+                viewModel.currentCompanyId()
+            )
+        }
         viewModel.message.observe(this) { message ->
             if (message != null) {
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

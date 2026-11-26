@@ -15,6 +15,52 @@ val DAY_ORDER = listOf(
     "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"
 )
 
+/** Nama hari Indonesia hari ini, mis. "Senin". */
+fun todayDayName(): String {
+    val cal = java.util.Calendar.getInstance()
+    // Calendar: Minggu=1 .. Sabtu=7 -> DAY_ORDER: Senin=0 .. Minggu=6.
+    val names = listOf("Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu")
+    return names[cal.get(java.util.Calendar.DAY_OF_WEEK) - 1]
+}
+
+/** Jam pulang kerja hari ini "HH:MM" dari workSchedule, fallback endTime legacy. */
+fun Company.endTimeForToday(): String {
+    val today = todayDayName()
+    val end = workSchedule[today]?.end?.takeIf { it.isNotBlank() }
+    return end ?: endTime.ifBlank { "17:00" }
+}
+
+/** "HH:MM" -> menit sejak tengah malam; null bila format tidak valid. */
+fun timeToMinutes(raw: String): Int? {
+    val parts = raw.trim().split(":")
+    if (parts.size != 2) return null
+    val h = parts[0].toIntOrNull() ?: return null
+    val m = parts[1].toIntOrNull() ?: return null
+    if (h !in 0..23 || m !in 0..59) return null
+    return h * 60 + m
+}
+
+/** Status badge logbook harian untuk beranda: belum isi / sudah isi / terlewat. */
+enum class DailyLogbookStatus { OPEN, DONE, MISSED }
+
+/**
+ * Tentukan status badge dari jam sekarang vs batas jam pulang + apakah
+ * logbook hari ini sudah ada. Menit pembanding bisa di-inject untuk unit test.
+ */
+fun dailyLogbookStatus(
+    hasLogbookToday: Boolean,
+    endTimeToday: String,
+    nowMinutes: Int? = null
+): DailyLogbookStatus {
+    if (hasLogbookToday) return DailyLogbookStatus.DONE
+    val now = nowMinutes ?: run {
+        val cal = java.util.Calendar.getInstance()
+        cal.get(java.util.Calendar.HOUR_OF_DAY) * 60 + cal.get(java.util.Calendar.MINUTE)
+    }
+    val limit = timeToMinutes(endTimeToday) ?: return DailyLogbookStatus.OPEN
+    return if (now > limit) DailyLogbookStatus.MISSED else DailyLogbookStatus.OPEN
+}
+
 /** Hari aktif (ada di workDays) atau dari workSchedule bila workDays kosong. */
 fun Company.activeDays(): List<String> {
     if (workDays.any { it.isNotBlank() }) return workDays.filter { it.isNotBlank() }
@@ -61,7 +107,12 @@ data class Company(
     val endTime: String = "17:00",
     val workSchedule: Map<String, WorkDaySchedule> = emptyMap(),
     val location: GeoPoint? = null,
-    val radiusMeters: Double = 100.0
+    val radiusMeters: Double = 100.0,
+    /**
+     * Verifikasi perusahaan oleh prodi. Default true agar perusahaan lama
+     * (tanpa field ini di Firestore) tetap dianggap terverifikasi.
+     */
+    val verified: Boolean = true
 ) {
     companion object {
         const val COLLECTION = "companies"
@@ -98,7 +149,9 @@ data class Logbook(
     val createdAt: Timestamp? = null,
     val status: String = STATUS_PENDING,
     val mentorNotes: String? = null,
-    val attachmentUrl: String? = null
+    val attachmentUrl: String? = null,
+    /** Waktu mentor mereview (epoch millis); 0 = belum pernah / sudah direset saat revisi. */
+    val reviewedAt: Long = 0
 ) {
     companion object {
         const val COLLECTION = "logbooks"
@@ -116,7 +169,11 @@ data class Attendance(
     val timestamp: Timestamp? = null,
     val photoUrl: String = "",
     val location: GeoPoint? = null,
-    val isValid: Boolean = false
+    val isValid: Boolean = false,
+    /** True jika absen masuk melewati jam masuk perusahaan. */
+    val isLate: Boolean = false,
+    /** Selisih menit dari jam masuk; 0 untuk absen pulang atau absen tepat waktu. */
+    val lateMinutes: Int = 0
 ) {
     companion object {
         const val COLLECTION = "attendance"
