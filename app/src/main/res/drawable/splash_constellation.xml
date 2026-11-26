@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Jaringan konstelasi samar di splash (titik + garis), putih transparan -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="640dp"
+    android:viewportWidth="360"
+    android:viewportHeight="640">
+    <!-- garis konstelasi kiri atas -->
+    <path
+        android:strokeColor="#33FFFFFF"
+        android:strokeWidth="1"
+        android:pathData="M20,40 L90,70 L160,45 L210,100 L130,130 L35,105 Z" />
+    <path
+        android:strokeColor="#22FFFFFF"
+        android:strokeWidth="1"
+        android:pathData="M250,60 L300,40 L330,90 L280,120" />
+    <path
+        android:strokeColor="#22FFFFFF"
+        android:strokeWidth="1"
+        android:pathData="M20,220 L60,150 L130,130" />
+    <path
+        android:strokeColor="#1AFFFFFF"
+        android:strokeWidth="1"
+        android:pathData="M300,400 L330,480 L290,560" />
+    <!-- titik-titik bintang -->
+    <path
+        android:fillColor="#66FFFFFF"
+        android:pathData="M20,40 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0" />
+    <path
+        android:fillColor="#66FFFFFF"
+        android:pathData="M90,70 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+    <path
+        android:fillColor="#66FFFFFF"
+        android:pathData="M160,45 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0" />
+    <path
+        android:fillColor="#66FFFFFF"
+        android:pathData="M210,100 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+    <path
+        android:fillColor="#55FFFFFF"
+        android:pathData="M130,130 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+    <path
+        android:fillColor="#55FFFFFF"
+        android:pathData="M35,105 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+    <path
+        android:fillColor="#55FFFFFF"
+        android:pathData="M250,60 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+    <path
+        android:fillColor="#55FFFFFF"
+        android:pathData="M300,40 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0" />
+    <path
+        android:fillColor="#44FFFFFF"
+        android:pathData="M280,120 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+    <path
+        android:fillColor="#44FFFFFF"
+        android:pathData="M60,150 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+    <path
+        android:fillColor="#44FFFFFF"
+        android:pathData="M300,400 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0" />
+    <path
+        android:fillColor="#44FFFFFF"
+        android:pathData="M290,560 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+</vector>

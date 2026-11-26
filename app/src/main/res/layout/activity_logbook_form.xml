@@ -17,8 +17,22 @@
         android:paddingBottom="20dp">
 
         <TextView
+            android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:padding="8dp"
+            android:text="← Kembali"
+            android:textColor="@color/login_button"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="@string/logbook_form_title"
             android:textColor="@color/login_text_primary"
             android:textSize="20sp"
@@ -68,10 +82,108 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/logbook_desc_hint"
+                android:text="@string/logbook_desc_label"
                 android:textColor="@color/login_text_primary"
                 android:textSize="13sp"
                 android:textStyle="bold" />
+
+            <!-- Toolbar format ala Word: baris 1 gaya huruf, baris 2 warna -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/boldButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:text="B"
+                    android:textAllCaps="false"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="@color/login_input_stroke"
+                    app:strokeWidth="1dp" />
+
+                <Button
+                    android:id="@+id/italicButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:text="I"
+                    android:textAllCaps="false"
+                    android:textSize="15sp"
+                    android:textStyle="italic"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="@color/login_input_stroke"
+                    app:strokeWidth="1dp" />
+
+                <Button
+                    android:id="@+id/underlineButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:text="U"
+                    android:textAllCaps="false"
+                    android:textSize="15sp"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="@color/login_input_stroke"
+                    app:strokeWidth="1dp" />
+
+                <Button
+                    android:id="@+id/bulletButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:text="• ≡"
+                    android:textAllCaps="false"
+                    android:textSize="15sp"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="@color/login_input_stroke"
+                    app:strokeWidth="1dp" />
+
+                <Button
+                    android:id="@+id/clearFormatButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:text="⌫"
+                    android:textAllCaps="false"
+                    android:textSize="15sp"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="@color/login_input_stroke"
+                    app:strokeWidth="1dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/colorRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" />
 
             <EditText
                 android:id="@+id/descInput"
@@ -80,7 +192,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_login_input"
                 android:gravity="top"
-                android:hint="@string/logbook_desc_hint"
+                android:hint="@string/logbook_desc_label"
                 android:importantForAutofill="no"
                 android:inputType="textMultiLine"
                 android:padding="16dp"
@@ -88,7 +200,7 @@
                 android:textColorHint="@color/login_text_secondary"
                 android:textSize="14sp" />
 
-            <!-- Lampiran PDF (opsional) -->
+            <!-- Sematkan file (gambar/PDF, opsional) -->
             <Button
                 android:id="@+id/attachmentButton"
                 style="?attr/materialButtonOutlinedStyle"
@@ -97,12 +209,20 @@
                 android:layout_marginTop="16dp"
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
-                android:text="@string/logbook_attachment_pick"
+                android:text="@string/logbook_attachment_pick_any"
                 android:textAllCaps="false"
                 android:textSize="13sp"
                 app:cornerRadius="12dp"
                 app:strokeColor="@color/login_button"
                 app:strokeWidth="1dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/logbook_attachment_hint"
+                android:textColor="@color/login_text_secondary"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/attachmentNameText"

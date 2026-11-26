@@ -138,6 +138,11 @@
             android:exported="false"
             android:theme="@style/Theme.Sixtern.Login" />
 
+        <activity
+            android:name=".ui.logbook.LogbookHistoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sixtern.Login" />
+
         <!-- Berbagi file PDF sementara (surat permohonan) ke viewer eksternal. -->
         <provider
             android:name="androidx.core.content.FileProvider"

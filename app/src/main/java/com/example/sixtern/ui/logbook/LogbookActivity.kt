@@ -27,17 +27,25 @@ class LogbookActivity : AppCompatActivity() {
         setContentView(binding.root)
         studentId = intent.getStringExtra(LoginActivity.EXTRA_USER_ID).orEmpty()
         companyId = intent.getStringExtra(EXTRA_COMPANY_ID).orEmpty()
-        adapter = LogbookAdapter { logbook ->
-            val intent = Intent(this, LogbookFormActivity::class.java)
-            intent.putExtra(LoginActivity.EXTRA_USER_ID, studentId)
-            intent.putExtra(EXTRA_COMPANY_ID, viewModel.currentCompanyId())
-            intent.putExtra(LogbookFormActivity.EXTRA_ID, logbook.id)
-            intent.putExtra(LogbookFormActivity.EXTRA_TITLE, logbook.title)
-            intent.putExtra(LogbookFormActivity.EXTRA_DESC, logbook.description)
-            // Catatan mentor terakhir ikut dibawa agar form menampilkannya (read-only).
-            intent.putExtra(LogbookFormActivity.EXTRA_NOTES, logbook.mentorNotes.orEmpty())
-            startActivity(intent)
-        }
+        adapter = LogbookAdapter(
+            onFixClick = { logbook ->
+                val intent = Intent(this, LogbookFormActivity::class.java)
+                intent.putExtra(LoginActivity.EXTRA_USER_ID, studentId)
+                intent.putExtra(EXTRA_COMPANY_ID, viewModel.currentCompanyId())
+                intent.putExtra(LogbookFormActivity.EXTRA_ID, logbook.id)
+                intent.putExtra(LogbookFormActivity.EXTRA_TITLE, logbook.title)
+                intent.putExtra(LogbookFormActivity.EXTRA_DESC, logbook.description)
+                // Catatan mentor terakhir ikut dibawa agar form menampilkannya (read-only).
+                intent.putExtra(LogbookFormActivity.EXTRA_NOTES, logbook.mentorNotes.orEmpty())
+                startActivity(intent)
+            },
+            onItemClick = { logbook ->
+                // Klik kartu -> riwayat penilaian logbook ini.
+                val intent = Intent(this, LogbookHistoryActivity::class.java)
+                intent.putExtra(LogbookHistoryActivity.EXTRA_LOGBOOK_ID, logbook.id)
+                startActivity(intent)
+            }
+        )
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
         binding.logbookNav.itemIconTintList = null

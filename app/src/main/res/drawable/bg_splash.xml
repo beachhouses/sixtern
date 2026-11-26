@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Base: gradien vertikal navy (mockup splashscreen.png revisi Nov 2026) -->
     <item>
         <shape android:shape="rectangle">
             <gradient
@@ -9,31 +10,33 @@
                 android:type="linear" />
         </shape>
     </item>
+    <!-- Glow biru-ungu lembut di area logo (atas tengah) -->
     <item
-        android:left="-120dp"
-        android:top="280dp"
-        android:right="120dp"
-        android:bottom="-160dp">
+        android:left="-60dp"
+        android:top="-80dp"
+        android:right="-60dp"
+        android:bottom="140dp">
         <shape android:shape="oval">
             <gradient
-                android:centerColor="#406D28D9"
-                android:endColor="#006D28D9"
-                android:gradientRadius="220dp"
-                android:startColor="#006D28D9"
+                android:centerColor="#4D6D8DFF"
+                android:endColor="#006D8DFF"
+                android:gradientRadius="240dp"
+                android:startColor="#006D8DFF"
                 android:type="radial" />
         </shape>
     </item>
+    <!-- Vignette bawah agar transisi ke navy pekat -->
     <item
-        android:left="180dp"
-        android:top="120dp"
-        android:right="-140dp"
-        android:bottom="120dp">
+        android:left="-40dp"
+        android:top="320dp"
+        android:right="-40dp"
+        android:bottom="-80dp">
         <shape android:shape="oval">
             <gradient
-                android:centerColor="#3310B981"
-                android:endColor="#0010B981"
-                android:gradientRadius="200dp"
-                android:startColor="#0010B981"
+                android:centerColor="#40060B23"
+                android:endColor="#00060B23"
+                android:gradientRadius="260dp"
+                android:startColor="#00060B23"
                 android:type="radial" />
         </shape>
     </item>

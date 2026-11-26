@@ -159,7 +159,8 @@ class LogbookReviewDetailActivity : AppCompatActivity() {
         binding.logbookDateText.text = if (date != null) {
             SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id")).format(date)
         } else "-"
-        binding.logbookDescText.text = logbook.description.ifBlank { "-" }
+        binding.logbookDescText.text =
+            RichTextEditor.fromHtml(logbook.description.ifBlank { "-" })
 
         if (!logbook.attachmentUrl.isNullOrBlank()) {
             binding.attachmentText.visibility = View.VISIBLE

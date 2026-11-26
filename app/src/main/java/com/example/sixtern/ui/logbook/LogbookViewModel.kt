@@ -8,6 +8,8 @@ import com.example.sixtern.data.model.Logbook
 import com.example.sixtern.data.model.SixternUser
 import com.example.sixtern.data.repository.AuthRepository
 import com.example.sixtern.data.repository.InternshipRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class LogbookViewModel(
@@ -26,6 +28,10 @@ class LogbookViewModel(
 
     private val _message = MutableLiveData<String?>(null)
     val message: LiveData<String?> = _message
+
+    /** True tepat setelah logbook BARU berhasil dibuat (bukan revisi). */
+    private val _created = MutableLiveData(false)
+    val created: LiveData<Boolean> = _created
 
     private var studentId: String = ""
     private var companyId: String = ""
@@ -53,6 +59,9 @@ class LogbookViewModel(
             companyId = if (accepted && freshCompanyId.isNotBlank()) freshCompanyId else ""
             _companyReady.value = companyId.isNotBlank()
             refresh()
+            // Listener realtime: status Disetujui/Revisi berubah otomatis
+            // saat mentor mereview — tanpa perlu keluar-masuk layar.
+            startObserving()
         }
     }
 
@@ -77,6 +86,18 @@ class LogbookViewModel(
 
     fun countRevision(): Int =
         _logbooks.value.orEmpty().count { it.status == Logbook.STATUS_REVISION }
+
+    /** Listener realtime logbook mahasiswa — status review mentor langsung tampil. */
+    private var observeJob: Job? = null
+
+    private fun startObserving() {
+        observeJob?.cancel()
+        if (studentId.isBlank()) return
+        observeJob = viewModelScope.launch {
+            repository.observeLogbooksByStudent(studentId)
+                .collectLatest { list -> _logbooks.value = list }
+        }
+    }
 
     fun refresh() {
         if (studentId.isBlank()) return
@@ -122,6 +143,7 @@ class LogbookViewModel(
                         studentId, companyId, title.trim(), description.trim(), attachmentUrl
                     )
                     _message.value = "Logbook terkirim, menunggu review mentor"
+                    _created.value = true
                 } else {
                     repository.updateLogbookRevision(
                         editingId, title.trim(), description.trim(), attachmentUrl
@@ -139,6 +161,11 @@ class LogbookViewModel(
 
     fun clearMessage() {
         _message.value = null
+    }
+
+    /** Konsumsi event pindah ke layar logbook setelah form selesai. */
+    fun consumeCreated() {
+        _created.value = false
     }
 
     companion object {

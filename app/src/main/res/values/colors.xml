@@ -15,9 +15,11 @@
     <color name="sixtern_green">#FF10B981</color>
     <color name="sixtern_green_deep">#FF0B7A55</color>
 
-    <!-- Splash background (dari design/mockups/splashscreen.png) -->
-    <color name="splash_bg_top">#FF1E0A3C</color>
-    <color name="splash_bg_bottom">#FF2A1450</color>
+    <!-- Splash background (dari design/mockups/splashscreen.png, revisi Nov 2026:
+         navy gelap + glow biru-ungu di atas, bukan ungu terang) -->
+    <color name="splash_bg_top">#FF2A3A5E</color>
+    <color name="splash_bg_glow">#FF6D8DFF</color>
+    <color name="splash_bg_bottom">#FF121B3A</color>
     <color name="text_on_dark">#FFFFFFFF</color>
     <color name="text_muted_on_dark">#FFC9C2D9</color>
 
@@ -40,6 +42,17 @@
     <color name="chip_rejected_bg">#FFC0392B</color>
     <color name="chip_rejected_text">#FFC0392B</color>
     <color name="login_input_bg">#FFFFFFFF</color>
+
+    <!-- Chip status logbook: Pending abu hangat, Disetujui hijau muda, Revisi merah muda -->
+    <color name="chip_logbook_pending_bg">#FFF4F3F2</color>
+    <color name="chip_logbook_pending_text">#FF847B7F</color>
+    <color name="chip_logbook_approved_bg">#FFCDEAD2</color>
+    <color name="chip_logbook_approved_text">#FF0B7A55</color>
+    <color name="chip_logbook_revision_bg">#FFFDECEA</color>
+    <color name="chip_logbook_revision_text">#FFC0392B</color>
+    <!-- Boks catatan mentor di kartu logbook -->
+    <color name="logbook_note_bg">#FFFDF6E3</color>
+    <color name="logbook_note_stroke">#FFF0DCAA</color>
 
     <!-- Progres magang: track abu-abu (sisa hari), progress hijau (hari dijalani) -->
     <color name="internship_progress_track">#FFE8E5E6</color>

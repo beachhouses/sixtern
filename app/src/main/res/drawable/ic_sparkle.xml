@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kilau bintang 4-titik di sudut kartu logo splash -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFB15CFF"
+        android:pathData="M12,1 C13.5,7 17,10.5 23,12 C17,13.5 13.5,17 12,23 C10.5,17 7,13.5 1,12 C7,10.5 10.5,7 12,1 Z" />
+</vector>

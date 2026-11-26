@@ -69,7 +69,13 @@ class StudentHomeViewModel(
     private val _applicationNotice = MutableLiveData<ApplicationNotice?>()
     val applicationNotice: LiveData<ApplicationNotice?> = _applicationNotice
 
+    /** Hasil review logbook terbaru (untuk badge notifikasi realtime). */
+    data class ReviewNotice(val reviewedAt: Long)
+    private val _reviewNotice = MutableLiveData<ReviewNotice?>()
+    val reviewNotice: LiveData<ReviewNotice?> = _reviewNotice
+
     private var userObserveJob: Job? = null
+    private var logbookObserveJob: Job? = null
 
     /** Status terakhir yang diamati listener — untuk mendeteksi perubahan. */
     private var lastObservedStatus: String? = null
@@ -114,6 +120,26 @@ class StudentHomeViewModel(
         }
     }
 
+    /**
+     * Listener realtime hasil review logbook: review terbaru mentor langsung
+     * memicu badge notifikasi di beranda tanpa perlu buka ulang layar.
+     */
+    private fun startLogbookObserving(uid: String) {
+        logbookObserveJob?.cancel()
+        if (uid.isBlank()) return
+        logbookObserveJob = viewModelScope.launch {
+            internshipRepository.observeLogbooksByStudent(uid)
+                .collectLatest { list ->
+                    val latest = list.maxByOrNull { it.reviewedAt }
+                    _reviewNotice.value = if (latest != null && latest.reviewedAt > 0) {
+                        ReviewNotice(latest.reviewedAt)
+                    } else {
+                        null
+                    }
+                }
+        }
+    }
+
     fun clearApplicationNotice() { _applicationNotice.value = null }
 
     private val _attendanceResult = MutableLiveData<Attendance?>()
@@ -122,6 +148,7 @@ class StudentHomeViewModel(
     fun load(uid: String, forceServer: Boolean = false) {
         _state.value = HomeUiState.Loading
         observeApplicationStatus(uid)
+        startLogbookObserving(uid)
         loadData(uid, forceServer)
     }
 

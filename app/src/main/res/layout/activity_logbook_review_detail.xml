@@ -83,7 +83,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="@string/logbook_desc_hint"
+                android:text="@string/logbook_desc_label"
                 android:textColor="@color/login_text_primary"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:lineSpacingMultiplier="1.4"
-                android:textColor="@color/login_text_secondary"
+                android:textColor="@color/login_text_primary"
                 android:textSize="13sp" />
 
             <TextView

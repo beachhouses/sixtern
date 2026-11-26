@@ -10,6 +10,7 @@ import com.example.sixtern.data.model.endTimeForToday
 import com.example.sixtern.data.model.scheduleSummary
 import com.example.sixtern.data.model.timeToMinutes
 import com.example.sixtern.data.repository.AuthRepository
+import com.example.sixtern.ui.logbook.LogbookFormActivity
 import com.example.sixtern.ui.profile.MentorProfileViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -184,5 +185,14 @@ class CompanyScheduleTest {
         )
         assertEquals("15:45", scheduled.endTimeForToday())
         assertEquals("16:30", c.endTimeForToday())
+    }
+
+    @Test
+    fun logbookHtml_detectsTaggedText() {
+        // Teks ber-tag dari toolbar -> disimpan apa adanya (tanpa framework).
+        assertTrue(LogbookFormActivity.containsHtmlTag("Kerja <b>bagus</b> hari ini"))
+        assertTrue(LogbookFormActivity.containsHtmlTag("<ul><li>satu</li></ul>"))
+        assertFalse(LogbookFormActivity.containsHtmlTag("Hari ini magang biasa"))
+        assertFalse(LogbookFormActivity.containsHtmlTag(""))
     }
 }

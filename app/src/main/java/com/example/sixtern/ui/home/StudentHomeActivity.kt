@@ -177,12 +177,13 @@ class StudentHomeActivity : AppCompatActivity() {
             binding.joiningBar.visibility = if (joining) View.VISIBLE else View.GONE
         }
 
+        viewModel.applicationNotice.observe(this) { renderNoticeBadge() }
+        // Badge ikut berubah saat mentor mereview logbook (realtime).
+        viewModel.reviewNotice.observe(this) { renderNoticeBadge() }
+
         viewModel.applicationNotice.observe(this) { notice ->
-            // Badge di tab Notifikasi: hanya muncul bila belum pernah dilihat
-            // (status berubah SETELAH terakhir user membuka halaman notifikasi).
-            val seenAt = com.example.sixtern.util.NotificationPrefs.getSeenAt(this, currentUid())
-            val unseen = notice != null && notice.statusUpdatedAt > seenAt
-            StudentNav.setBadge(binding.homeMenuBar, if (unseen) 1 else 0)
+            // Badge dihitung gabungan pengajuan + hasil review (realtime).
+            renderNoticeBadge()
 
             if (notice == null) {
                 binding.applicationNoticeCard.visibility = View.GONE
@@ -208,6 +209,20 @@ class StudentHomeActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * Badge tab Notifikasi: muncul bila ada pengajuan ATAU hasil review
+     * logbook yang belum dilihat (diubah setelah terakhir buka notifikasi).
+     */
+    private fun renderNoticeBadge() {
+        val seenAt =
+            com.example.sixtern.util.NotificationPrefs.getSeenAt(this, currentUid())
+        val notice = viewModel.applicationNotice.value
+        val review = viewModel.reviewNotice.value
+        val unseen = (notice != null && notice.statusUpdatedAt > seenAt) ||
+            (review != null && review.reviewedAt > seenAt)
+        StudentNav.setBadge(binding.homeMenuBar, if (unseen) 1 else 0)
     }
 
     override fun onResume() {

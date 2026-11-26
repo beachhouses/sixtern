@@ -2,7 +2,8 @@
     <string name="app_name">SixTern</string>
     <string name="tagline">Penilaian Magang, Lebih Mudah</string>
     <string name="batch_label">Batch Gen-6</string>
-    <string name="splash_footer">Sistem Terenkripsi &amp; Terintegrasi HR</string>
+    <string name="splash_title">SIXTERN</string>
+    <string name="splash_subtitle">Student Internship Experience &amp; Evaluation App</string>
     <string name="login_subtitle">Masuk untuk mengelola magangmu</string>
     <string name="login_title">Selamat Datang Kembali</string>
     <string name="login_desc">Masuk untuk melanjutkan progres magang dan melihat evaluasi terbarumu.</string>
@@ -88,9 +89,11 @@
     <string name="status_approved">Disetujui</string>
     <string name="status_revision">Perlu revisi</string>
     <string name="fix_revision">Perbaiki Revisi</string>
+    <!-- Kartu logbook mahasiswa: label & teks keterangan -->
+    <string name="logbook_card_notes_label">Catatan mentor</string>
+    <string name="logbook_card_attachment">Lampiran: %1$s</string>
     <string name="logbook_form_title">Catatan Logbook</string>
     <string name="logbook_title_hint">Judul kegiatan</string>
-    <string name="logbook_desc_hint">Ceritakan kegiatan magangmu</string>
     <string name="save">Simpan</string>
     <string name="evaluation_title">Evaluasi Magang</string>
     <string name="total_score">Nilai Akhir</string>
@@ -207,6 +210,11 @@
     <string name="applicant_reject_confirm">Tolak</string>
     <string name="applicant_reject_reason_hint">Alasan penolakan (opsional)</string>
     <string name="applicant_reject_reason_hint_desc">Kamu bisa menulis alasan penolakan agar peserta bisa memperbaiki diri. Boleh dikosongkan.</string>
+    <!-- Log penilaian logbook di detail peserta (mentor) -->
+    <string name="applicant_section_logbook">Log Penilaian Logbook</string>
+    <string name="applicant_logbook_summary">%1$d logbook • %2$d disetujui • %3$d revisi</string>
+    <string name="applicant_logbook_empty">Peserta ini belum menulis logbook.</string>
+    <string name="applicant_logbook_note_label">Catatan: %1$s</string>
     <string name="cancel">Batal</string>
     <string name="back">Kembali</string>
     <string name="edit_profile">Edit Profil</string>
@@ -366,8 +374,19 @@
     <string name="logbook_review_approved_msg">Logbook disetujui. Notifikasi terkirim ke mahasiswa.</string>
     <string name="logbook_review_revised_msg">Permintaan revisi terkirim ke mahasiswa.</string>
     <string name="logbook_attachment_attached">&#128206; Lampiran terlampir</string>
+    <!-- Riwayat penilaian per logbook (timeline dibuat -> review terakhir) -->
+    <string name="logbook_history_title">Riwayat Penilaian</string>
+    <string name="logbook_history_step_created">Logbook dibuat</string>
+    <string name="logbook_history_step_reviewed_approved">Disetujui mentor</string>
+    <string name="logbook_history_step_reviewed_revision">Diminta revisi oleh mentor</string>
+    <string name="logbook_history_step_waiting">Menunggu review mentor</string>
+    <string name="logbook_history_open_review">Buka Halaman Review</string>
+    <string name="logbook_history_empty_note">Belum ada catatan mentor.</string>
     <string name="logbook_attachment_pick">Pilih Lampiran (PDF)</string>
+    <string name="logbook_attachment_pick_any">Sematkan file (opsional)</string>
+    <string name="logbook_attachment_hint">Gambar atau PDF, boleh dikosongkan</string>
     <string name="logbook_attachment_name">Lampiran: %1$s</string>
+    <string name="logbook_desc_label">Deskripsi kegiatan magang</string>
     <string name="logbook_form_mentor_notes">Catatan Mentor (read-only)</string>
     <!-- Notifikasi mentor -->
     <string name="mentor_notif_logbook_title">Review Logbook</string>
